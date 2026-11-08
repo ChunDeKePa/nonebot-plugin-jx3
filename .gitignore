@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+dist/
+nonebot_plugin_jx3/data/
+data/
+.env
+old_readme.md
+old_readme_utf8.md
+.idea/
+napcat/
+*.log
+

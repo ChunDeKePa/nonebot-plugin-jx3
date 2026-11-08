@@ -1,0 +1,62 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      # 提示：Dockerfile 中已全量配置国内源（Debian阿里源、pip阿里源、Playwright淘宝源），默认无需代理即可极速构建。
+      # 如遇特殊网络必须走代理构建，Mac 请填 host.docker.internal，Linux 服务器填 172.17.0.1：
+      # args:
+      #   - HTTP_PROXY=http://host.docker.internal:7897
+      #   - HTTPS_PROXY=http://host.docker.internal:7897
+    container_name: nonebot2_jx3
+    restart: always
+    shm_size: "1gb"          # 为 Playwright Chromium 渲染预留共享内存，防止生成图片/长图崩溃
+    dns:
+      - 223.5.5.5           # 阿里公共 DNS
+      - 119.29.29.29        # 腾讯公共 DNS
+    ports:
+      - "8080:8080"         # 映射 NoneBot 服务端口（供宿主机调试或外部反向代理）
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - .env:/app/.env:ro # 将本地 .env 文件直接挂载到容器内，NoneBot 启动自动读取
+      # 注意：严禁直接挂载空目录覆盖 /app，否则会抹除构建好的代码导致找不到模块
+      # 若需本地开发热重载，可取消下一行注释：
+      # - ./nonebot_plugin_jx3:/app/nonebot_plugin_jx3
+      - ./data:/app/data    # 预留持久化数据目录
+    networks:
+      - nonebot
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    container_name: napcat
+    restart: always
+    mac_address: "02:42:ac:11:00:02"
+    ports:
+      - "6099:6099"         # NapCat WebUI 控制台，浏览器访问 http://localhost:6099/webui 进行扫码登录
+    volumes:
+      - "./napcat/config:/app/napcat/config"
+      - "./napcat/qq:/app/.config/QQ"
+    networks:
+      - nonebot
+    depends_on:
+      - bot
+    environment:
+      - TZ=Asia/Shanghai
+      - NAPCAT_UID=1000
+      - NAPCAT_GID=1000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+# NapCat 连接 NoneBot 指南：
+# 登录 NapCat WebUI (http://localhost:6099/webui) 后，在「网络配置」中添加一个「反向 WebSocket」：
+# WebSocket 地址填写：ws://bot:8080/onebot/v11/ws
+# （因为它们处于同一个 nonebot 网络中，直接用服务名 bot 即可通信）
+
+networks:
+  nonebot:
+    driver: bridge
