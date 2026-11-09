@@ -87,3 +87,156 @@ async def handle_reward(event: GroupMessageEvent, args: Message = CommandArg()):
 
     img = await renderer.render("table.html", title=f"🎁 掉落统计 · {name}", data=data)
     await cmd_reward.finish(MessageSegment.image(img))
+
+
+# ===== 名剑总榜 =====
+cmd_rank_arena = on_command("名剑总榜", aliases={"跨服名剑", "名剑全服榜"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_arena.handle()
+async def handle_rank_arena(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    mode = 22 if "2" in text else (55 if "5" in text else 33)
+
+    try:
+        data = await api_client.rank_arena(mode=mode)
+    except JX3APIError as e:
+        await cmd_rank_arena.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏆 名剑大会全服总榜 ({mode}v{mode})", data=data)
+    await cmd_rank_arena.finish(MessageSegment.image(img))
+
+
+# ===== 争霸榜 =====
+cmd_rank_champ = on_command("争霸榜", aliases={"武林争霸", "争霸赛"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_champ.handle()
+async def handle_rank_champ(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    camp = 2 if "恶" in text else 1
+    camp_str = "恶人谷" if camp == 2 else "浩气盟"
+
+    try:
+        data = await api_client.rank_championship(camp=camp)
+    except JX3APIError as e:
+        await cmd_rank_champ.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏆 帮会武林争霸赛排行 ({camp_str})", data=data)
+    await cmd_rank_champ.finish(MessageSegment.image(img))
+
+
+# ===== 捕快榜 =====
+cmd_rank_constable = on_command("捕快榜", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_constable.handle()
+async def handle_rank_constable(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = await get_server(event, args)
+    if not server:
+        await cmd_rank_constable.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.rank_constable(server=server)
+    except JX3APIError as e:
+        await cmd_rank_constable.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏆 捕快榜 · {server}", data=data)
+    await cmd_rank_constable.finish(MessageSegment.image(img))
+
+
+# ===== 浪客榜 =====
+cmd_rank_outlaw = on_command("浪客榜", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_outlaw.handle()
+async def handle_rank_outlaw(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = await get_server(event, args)
+    if not server:
+        await cmd_rank_outlaw.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.rank_outlaw(server=server)
+    except JX3APIError as e:
+        await cmd_rank_outlaw.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏆 浪客榜 · {server}", data=data)
+    await cmd_rank_outlaw.finish(MessageSegment.image(img))
+
+
+# ===== 决斗榜 =====
+cmd_rank_wanted = on_command("决斗榜", aliases={"赏金榜"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_wanted.handle()
+async def handle_rank_wanted(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = await get_server(event, args)
+    if not server:
+        await cmd_rank_wanted.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.rank_wanted(server=server)
+    except JX3APIError as e:
+        await cmd_rank_wanted.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏆 决斗赏金榜 · {server}", data=data)
+    await cmd_rank_wanted.finish(MessageSegment.image(img))
+
+
+# ===== 排行统计 =====
+cmd_rank_stats = on_command("排行统计", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_rank_stats.handle()
+async def handle_rank_stats(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    server = await get_server(event, args)
+
+    try:
+        data = await api_client.rank_statistics(server=server or "", name=text)
+    except JX3APIError as e:
+        await cmd_rank_stats.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"📊 排行统计 · {server}", data=data)
+    await cmd_rank_stats.finish(MessageSegment.image(img))
+
+
+# ===== 试炼秒伤 =====
+cmd_trial_boss = on_command("试炼秒伤", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_trial_boss.handle()
+async def handle_trial_boss(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    parts = text.split()
+    if len(parts) < 2:
+        await cmd_trial_boss.finish("请输入赛季与层数，如：试炼秒伤 奉天证道 100")
+
+    season, floor_str = parts[0], parts[1]
+    try:
+        floor = int(floor_str)
+    except ValueError:
+        await cmd_trial_boss.finish("❌ 层数必须为纯数字")
+
+    try:
+        data = await api_client.trial_bosses(season=season, floor=floor)
+    except JX3APIError as e:
+        await cmd_trial_boss.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🗡️ 试炼秒伤 · {season} 第{floor}层", data=data)
+    await cmd_trial_boss.finish(MessageSegment.image(img))
+
+
+# ===== 试炼赛季 =====
+cmd_trial_season = on_command("试炼赛季", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_trial_season.handle()
+async def handle_trial_season(event: GroupMessageEvent):
+    try:
+        data = await api_client.trial_seasons()
+    except JX3APIError as e:
+        await cmd_trial_season.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title="🗡️ 试炼之地历史赛季", data=data)
+    await cmd_trial_season.finish(MessageSegment.image(img))

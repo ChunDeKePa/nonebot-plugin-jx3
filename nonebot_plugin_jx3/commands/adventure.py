@@ -126,3 +126,22 @@ async def handle_adv_collect(event: GroupMessageEvent, args: Message = CommandAr
 
     img = await renderer.render("table.html", title=f"📋 奇遇汇总 · {server}", data=data)
     await cmd_adv_collect.finish(MessageSegment.image(img))
+
+
+# ===== 奇遇攻略 =====
+cmd_strategy = on_command("奇遇攻略", aliases={"奇遇前置", "攻略"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_strategy.handle()
+async def handle_strategy(event: GroupMessageEvent, args: Message = CommandArg()):
+    name = args.extract_plain_text().strip()
+    if not name:
+        await cmd_strategy.finish("请输入奇遇名称，如：奇遇攻略 阴阳两界")
+
+    try:
+        data = await api_client.event_strategy(name=name)
+    except JX3APIError as e:
+        await cmd_strategy.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🎯 奇遇攻略 · {name}", data=data)
+    await cmd_strategy.finish(MessageSegment.image(img))

@@ -104,3 +104,22 @@ async def handle_ranch(event: GroupMessageEvent, args: Message = CommandArg()):
         note=note_text,
     )
     await cmd_ranch.finish(MessageSegment.image(img))
+
+
+# ===== 抓马播报 =====
+cmd_ranch_chat = on_command("抓马倒计时", aliases={"抓马播报", "马场通告"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_ranch_chat.handle()
+async def handle_ranch_chat(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = await get_server(event, args)
+    if not server:
+        await cmd_ranch_chat.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.ranch_chat(server=server)
+    except JX3APIError as e:
+        await cmd_ranch_chat.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏇 抓马播报 · {server}", data=data)
+    await cmd_ranch_chat.finish(MessageSegment.image(img))

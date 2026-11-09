@@ -140,3 +140,84 @@ async def handle_fuyao(event: GroupMessageEvent, args: Message = CommandArg()):
 
     img = await renderer.render("card.html", title="☁️ 扶摇预测", data=data)
     await cmd_fuyao.finish(MessageSegment.image(img))
+
+
+# ===== 百战周报 =====
+cmd_monster_weekly = on_command("百战周报", aliases={"本周百战"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_monster_weekly.handle()
+async def handle_monster_weekly(event: GroupMessageEvent):
+    try:
+        data = await api_client.monster_weekly()
+    except JX3APIError as e:
+        await cmd_monster_weekly.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title="⚔️ 百战异闻录 · 周报", data=data)
+    await cmd_monster_weekly.finish(MessageSegment.image(img))
+
+
+# ===== 我的百战 =====
+cmd_my_monster = on_command("我的百战", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_my_monster.handle()
+async def handle_my_monster(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    parts = text.split()
+    if not parts:
+        await cmd_my_monster.finish("请输入角色名，如：我的百战 赤瞳竹")
+
+    from ..database import db
+    from ..config import plugin_config
+    default_server = None
+    if hasattr(event, "group_id"):
+        default_server = await db.get_server(event.group_id)
+    if not default_server:
+        default_server = plugin_config.jx3_default_server
+
+    if len(parts) >= 2:
+        server, name = parts[0], parts[1]
+    else:
+        server, name = default_server, parts[0]
+
+    if not server:
+        await cmd_my_monster.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.monster_records(server=server, name=name)
+    except JX3APIError as e:
+        await cmd_my_monster.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"⚔️ 我的百战 · {name}", data=data)
+    await cmd_my_monster.finish(MessageSegment.image(img))
+
+
+# ===== 关隘状态 =====
+cmd_castle_status = on_command("关隘状态", aliases={"关隘首领状态", "全服关隘"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_castle_status.handle()
+async def handle_castle_status(event: GroupMessageEvent):
+    try:
+        data = await api_client.castle_status()
+    except JX3APIError as e:
+        await cmd_castle_status.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title="👹 全服关隘首领状态", data=data)
+    await cmd_castle_status.finish(MessageSegment.image(img))
+
+
+# ===== 秘境方位 =====
+cmd_mech_direction = on_command("秘境方位", aliases={"八卦方位", "秘境解密"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_mech_direction.handle()
+async def handle_mech_direction(event: GroupMessageEvent):
+    try:
+        data = await api_client.mech_decrypt()
+    except JX3APIError as e:
+        await cmd_mech_direction.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title="🧭 秘境八卦方位实时解密", data=data)
+    await cmd_mech_direction.finish(MessageSegment.image(img))

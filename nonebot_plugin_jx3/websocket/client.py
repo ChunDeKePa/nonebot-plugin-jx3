@@ -41,11 +41,13 @@ async def _connect_loop():
     while _running:
         try:
             headers = {"token": plugin_config.jx3wss_token} if plugin_config.jx3wss_token else {}
-            async with ClientSession(timeout=ClientTimeout(total=10)) as session:
+            # total=None 避免长连接被 10 秒超时强制掐断，heartbeat 维持 TCP 心跳保活
+            async with ClientSession(timeout=ClientTimeout(total=None, sock_connect=15)) as session:
                 async with session.ws_connect(
                     plugin_config.jx3_wss_url,
                     headers=headers,
-                    ssl=True
+                    ssl=True,
+                    heartbeat=30.0,
                 ) as ws:
                     _ws = ws
                     retry_delay = 5  # 连接成功，重置退避
@@ -53,10 +55,15 @@ async def _connect_loop():
 
                     async for msg in ws:
                         if msg.type == 1:  # TEXT
-                            data = msg.json()
-                            asyncio.create_task(_dispatch(data))
-                        else:
+                            try:
+                                data = msg.json()
+                                asyncio.create_task(_dispatch(data))
+                            except Exception as e:
+                                logger.error(f"[JX3] 解析 WebSocket 消息异常: {e}")
+                        elif msg.type in (8, 7):  # CLOSE or ERROR
+                            logger.warning(f"[JX3] WebSocket 连接关闭或异常: {msg.type}")
                             break
+                        # PING/PONG 等控制帧自动维护，不中断循环
 
         except Exception as e:
             logger.error(f"[JX3] WebSocket 异常: {e}")

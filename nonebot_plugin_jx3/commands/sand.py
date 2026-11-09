@@ -88,3 +88,22 @@ async def handle_smite(event: GroupMessageEvent, args: Message = CommandArg()):
         headers=["刷新地图", "刷新时间"]
     )
     await cmd_smite.finish(MessageSegment.image(img))
+
+
+# ===== 诛恶历史 =====
+cmd_wicked = on_command("诛恶历史", aliases={"诛恶记录"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_wicked.handle()
+async def handle_wicked(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = await get_server(event, args)
+    if not server:
+        await cmd_wicked.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.wicked_records(server=server)
+    except JX3APIError as e:
+        await cmd_wicked.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"😈 诛恶历史 · {server}", data=data)
+    await cmd_wicked.finish(MessageSegment.image(img))

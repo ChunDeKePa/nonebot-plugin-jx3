@@ -12,27 +12,50 @@ from ..database import db
 from ..utils import format_ts
 
 
-async def _send_to_groups(server: str, subscribe: str, message: str):
+async def _send_to_groups(server: str, subscribe: str, message: str, allow_all_subscribers: bool = False):
     """发送消息到所有订阅了指定事件且绑定了对应服务器的群。
-    server 为空时发送给所有订阅群。
+    - allow_all_subscribers=True 或 server 为空时发送给所有订阅群
+    - 支持群白名单 (jx3_enabled_groups) 自动过滤
+    - 兼容多个已连接 Bot 适配器实例
     """
-    try:
-        bot = get_bot()
-    except Exception:
+    from nonebot import get_bots
+    from ..config import plugin_config
+
+    bots = get_bots()
+    if not bots:
+        logger.warning(f"[JX3] 没有已连接的 Bot 适配器，跳过推送事件 [{subscribe}]")
         return
 
-    if server:
+    bot = list(bots.values())[0]
+
+    sub_groups = set(await db.get_groups_by_subscribe(subscribe))
+    # 支持 818 与 八卦 别名互通，微博与新闻互通
+    if subscribe in ("818", "八卦"):
+        sub_groups |= set(await db.get_groups_by_subscribe("818"))
+        sub_groups |= set(await db.get_groups_by_subscribe("八卦"))
+    elif subscribe in ("微博", "新闻"):
+        sub_groups |= set(await db.get_groups_by_subscribe("微博"))
+        sub_groups |= set(await db.get_groups_by_subscribe("新闻"))
+
+    if server and not allow_all_subscribers:
         bind_groups = set(await db.get_groups_by_server(server))
-        sub_groups = set(await db.get_groups_by_subscribe(subscribe))
         target = bind_groups & sub_groups
     else:
-        target = set(await db.get_groups_by_subscribe(subscribe))
+        target = sub_groups
 
+    # 若配置了群白名单，仅向白名单群发送
+    if plugin_config.jx3_enabled_groups:
+        target = target & set(plugin_config.jx3_enabled_groups)
+
+    if not target:
+        return
+
+    logger.info(f"[JX3] 推送 [{subscribe}] 事件至 {len(target)} 个群: {target}")
     for gid in target:
         try:
             await bot.send_group_msg(group_id=gid, message=message)
         except Exception as e:
-            logger.error(f"[JX3] 发送到群 {gid} 失败: {e}")
+            logger.error(f"[JX3] 发送事件 [{subscribe}] 到群 {gid} 失败: {e}")
 
 
 # ============================================================
@@ -264,28 +287,64 @@ async def handle_2003(action: int, detail: dict):
     await _send_to_groups("", "更新", msg)
 
 
+async def handle_1105(action: int, detail: dict):
+    """帮会约战·完胜"""
+    server = detail.get("server", "")
+    v = detail.get("victory_tong_name", "")
+    d = detail.get("defeat_tong_name", "")
+    msg = f"⚔️ 帮会约战结束：【{v}】完胜【{d}】！"
+    await _send_to_groups(server, "攻防实况", msg)
+
+
+async def handle_1018(action: int, detail: dict):
+    """关隘首领"""
+    server = detail.get("server", "")
+    boss = detail.get("name", "关隘首领")
+    map_name = detail.get("map_name", "")
+    stage = detail.get("stage", "刷新")
+    msg = f"👹 {server} 关隘首领【{boss}】在 {map_name} {stage}！"
+    await _send_to_groups(server, "关隘", msg)
+
+
+async def handle_1201(action: int, detail: dict):
+    """社交动态·微博更新"""
+    name = detail.get("name", "官方微博")
+    content = detail.get("content", "")
+    url = detail.get("url", "")
+    msg = f"📱 [{name}] 微博更新：\n{content}\n🔗 {url}" if url else f"📱 [{name}] 微博更新：\n{content}"
+    await _send_to_groups("", "微博", msg, allow_all_subscribers=True)
+
+
 async def handle_2004(action: int, detail: dict):
-    """八卦速报"""
+    """八卦速报 (https://www.jx3api.com/#/socket/2004)"""
+    tags = detail.get("tags", "818")
     title = detail.get("title", "")
     url = detail.get("url", "")
     server = detail.get("server", "")
-    if server == "-":
-        server = ""
-    msg = f"📢 {title}\n🔗 {url}"
-    await _send_to_groups(server, "818", msg)
+    tieba = detail.get("tieba", "")
+    date = detail.get("date", "")
+    
+    srv_tag = f"【{server}】" if server and server not in ("-", "全服") else ""
+    tieba_str = f"（{tieba}吧）" if tieba else ""
+    time_str = f" [{date}]" if date else ""
+    msg = f"📢 [贴吧八卦·{tags}]{srv_tag}{time_str}\n{title} {tieba_str}\n🔗 {url}"
+    # 818 八卦全服向推送，允许所有订阅了 818 的群接收
+    await _send_to_groups(server, "818", msg, allow_all_subscribers=True)
 
 
 async def handle_2005(action: int, detail: dict):
     """关隘首领"""
     server = detail.get("server", "")
-    msg = "👹 关隘首领事件"
+    msg = f"👹 烂柯山关隘首领冷却重置/事件开启！服务器：{server}"
     await _send_to_groups(server, "关隘", msg)
 
 
 async def handle_2006(action: int, detail: dict):
     """云丛预告"""
     server = detail.get("server", "")
-    msg = "☁️ 云丛预告"
+    name = detail.get("name", "云丛事件")
+    time_str = detail.get("time", "")
+    msg = f"☁️ [{server}] 云丛事件预告：{name} 即将开启！{time_str}"
     await _send_to_groups(server, "云丛", msg)
 
 
@@ -310,11 +369,14 @@ HANDLER_MAP: Dict[int, Callable] = {
     1015: handle_1015,
     1016: handle_1016_1017,
     1017: handle_1016_1017,
+    1018: handle_1018,
     1101: handle_1101,
     1102: handle_1102,
     1103: handle_1103,
     1104: handle_1104,
+    1105: handle_1105,
     **{i: handle_gongfang for i in range(1111, 1123)},
+    1201: handle_1201,
     2001: handle_2001,
     2002: handle_2002,
     2003: handle_2003,

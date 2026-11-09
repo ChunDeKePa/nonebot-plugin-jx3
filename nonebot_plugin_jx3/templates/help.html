@@ -5,73 +5,162 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 600px;
+    width: 760px;
     font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     color: #e0e0e0;
-    padding: 20px;
+    padding: 24px;
   }
   .card {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(212,175,55,0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
     margin-bottom: 16px;
   }
   .main-title {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     color: #d4af37;
     text-align: center;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(212,175,55,0.3);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+  .legend-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    font-size: 12px;
   }
   .section-title {
     font-size: 16px;
     font-weight: bold;
-    color: #c0a030;
-    margin: 16px 0 8px 0;
-    padding-left: 8px;
+    color: #ffd54f;
+    margin: 18px 0 10px 0;
+    padding-left: 10px;
     border-left: 3px solid #d4af37;
+  }
+  .cmd-table-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #d4af37;
+    background: rgba(212, 175, 55, 0.12);
+    border-radius: 4px;
+    margin-bottom: 4px;
   }
   .cmd-row {
     display: flex;
-    padding: 5px 0;
+    align-items: center;
+    padding: 6px 8px;
     font-size: 13px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .cmd-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .cmd-row:hover {
+    background: rgba(255, 255, 255, 0.06);
   }
   .cmd-name {
     color: #90caf9;
-    min-width: 180px;
-    font-family: monospace;
+    width: 260px;
+    flex-shrink: 0;
+    font-family: Consolas, Monaco, monospace;
     font-size: 13px;
   }
   .cmd-desc {
-    color: rgba(255,255,255,0.65);
+    color: rgba(255, 255, 255, 0.78);
     font-size: 13px;
+    flex-grow: 1;
+    padding-right: 12px;
   }
-  .footer {
-    text-align: center;
-    color: rgba(255,255,255,0.3);
+  .cmd-level {
     font-size: 11px;
-    margin-top: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 52px;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .lvl-free {
+    background: rgba(76, 175, 80, 0.18);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.4);
+  }
+  .lvl-vip1 {
+    background: rgba(255, 193, 7, 0.18);
+    color: #ffd54f;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+  }
+  .lvl-vip2 {
+    background: rgba(186, 104, 200, 0.22);
+    color: #e1bee7;
+    border: 1px solid rgba(186, 104, 200, 0.45);
+  }
+  .lvl-tuilan {
+    background: rgba(33, 150, 243, 0.18);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.4);
+  }
+  .lvl-admin {
+    background: rgba(255, 112, 67, 0.2);
+    color: #ff8a65;
+    border: 1px solid rgba(255, 112, 67, 0.4);
+  }
+  .lvl-push {
+    background: rgba(0, 188, 212, 0.2);
+    color: #4dd0e1;
+    border: 1px solid rgba(0, 188, 212, 0.4);
   }
   .divider {
     height: 1px;
-    background: rgba(212,175,55,0.15);
-    margin: 6px 0;
+    background: rgba(212, 175, 55, 0.15);
+    margin: 10px 0;
+  }
+  .footer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 12px;
+    margin-top: 14px;
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="main-title">⚔️ 剑网三助手 · 指令帮助</div>
+    <div class="main-title">⚔️ 剑网三助手 · 全指令与推送帮助</div>
+    <div class="legend-bar">
+      <span>接口权限标识：</span>
+      <span class="cmd-level lvl-free">免费</span>
+      <span class="cmd-level lvl-vip1">VIP 1</span>
+      <span class="cmd-level lvl-vip2">VIP 2</span>
+      <span class="cmd-level lvl-tuilan">推栏</span>
+      <span class="cmd-level lvl-admin">管理</span>
+      <span class="cmd-level lvl-push">推送</span>
+    </div>
+
     {% for section, commands in data.items() %}
     <div class="section-title">{{ section }}</div>
-    {% for cmd, desc in commands %}
+    <div class="cmd-table-header">
+      <span style="width: 260px; flex-shrink: 0;">指令格式</span>
+      <span style="flex-grow: 1;">功能说明</span>
+      <span style="min-width: 52px; text-align: center; flex-shrink: 0;">权限等级</span>
+    </div>
+    {% for item in commands %}
     <div class="cmd-row">
-      <span class="cmd-name">{{ cmd }}</span>
-      <span class="cmd-desc">{{ desc }}</span>
+      <span class="cmd-name">{{ item[0] }}</span>
+      <span class="cmd-desc">{{ item[1] }}</span>
+      {% set lvl = item[2] if item|length > 2 else '免费' %}
+      {% set lvl_class = 'lvl-vip2' if 'VIP 2' in lvl else ('lvl-vip1' if 'VIP 1' in lvl else ('lvl-tuilan' if '推栏' in lvl else ('lvl-admin' if '管理' in lvl else ('lvl-push' if '推送' in lvl else 'lvl-free')))) %}
+      <span class="cmd-level {{ lvl_class }}">{{ lvl }}</span>
     </div>
     {% endfor %}
     {% if not loop.last %}<div class="divider"></div>{% endif %}

@@ -68,7 +68,7 @@ class JX3Database:
     SUBSCRIBE_NAMES = [
         "奇遇", "绝世奇遇", "抓马", "扶摇", "诛恶", "玄晶",
         "烟花", "的卢", "追魂", "祭天", "阵营拍卖",
-        "开服", "新闻", "更新", "818",
+        "开服", "新闻", "更新", "818", "八卦", "微博",
         "攻防实况", "阵营活动提醒",
         "关隘", "云丛",
     ]
@@ -83,6 +83,8 @@ class JX3Database:
 
     async def add_subscribe(self, group_id: int, name: str) -> bool:
         """添加订阅。返回 True=成功, False=已存在"""
+        if name == "八卦":
+            name = "818"
         current = await self.get_subscribes(group_id)
         if name in current:
             return False
@@ -95,6 +97,8 @@ class JX3Database:
 
     async def remove_subscribe(self, group_id: int, name: str) -> bool:
         """移除订阅。返回 True=成功, False=不存在"""
+        if name == "八卦":
+            name = "818"
         current = await self.get_subscribes(group_id)
         if name not in current:
             return False

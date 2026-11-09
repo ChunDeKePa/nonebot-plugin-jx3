@@ -63,8 +63,85 @@ async def handle_bagua(event: GroupMessageEvent, args: Message = CommandArg()):
 
     await cmd_bagua.finish(msg)
 
+# ===== 吃什么 =====
+cmd_eat = on_command("吃什么", aliases={"今天吃什么", "中午吃什么", "晚上吃什么"}, rule=group_filter(), priority=5, block=True)
 
 
+@cmd_eat.handle()
+async def handle_eat():
+    try:
+        data = await api_client.saohua_eat()
+    except JX3APIError as e:
+        await cmd_eat.finish(f"❌ 获取失败：{e.msg}")
+
+    items = data if isinstance(data, list) else [str(data)]
+    items_str = "、".join(f"【{x}】" for x in items)
+    await cmd_eat.finish(f"🍴 侠士今天可以吃：\n{items_str}")
+
+
+# ===== 喝什么 =====
+cmd_drink = on_command("喝什么", aliases={"今天喝什么", "下午茶"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_drink.handle()
+async def handle_drink():
+    try:
+        data = await api_client.saohua_drink()
+    except JX3APIError as e:
+        await cmd_drink.finish(f"❌ 获取失败：{e.msg}")
+
+    items = data if isinstance(data, list) else [str(data)]
+    items_str = "、".join(f"【{x}】" for x in items)
+    await cmd_drink.finish(f"🥤 今日饮品推荐：\n{items_str}")
+
+
+# ===== 答案之书 =====
+cmd_answer = on_command("答案之书", aliases={"翻看答案", "求签"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_answer.handle()
+async def handle_answer(args: Message = CommandArg()):
+    q = args.extract_plain_text().strip()
+    try:
+        data = await api_client.saohua_answer()
+    except JX3APIError as e:
+        await cmd_answer.finish(f"❌ 获取失败：{e.msg}")
+
+    ans = data.get("answer", "顺其自然")
+    hearten = data.get("hearten", "")
+    prefix = f"❓ 所问之事：{q}\n" if q else ""
+    await cmd_answer.finish(f"📖 《答案之书》\n{prefix}「{ans}」\n\n✨ {hearten}")
+
+
+# ===== 渣男语录 =====
+cmd_zhanan = on_command("渣男", aliases={"渣男语录"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_zhanan.handle()
+async def handle_zhanan():
+    try:
+        data = await api_client.saohua_zhanan()
+    except JX3APIError as e:
+        await cmd_zhanan.finish(f"❌ 获取失败：{e.msg}")
+
+    await cmd_zhanan.finish(f"💔 {data.get('text', '暂无语录')}")
+
+
+# ===== 分类语录 =====
+cmd_context = on_command("语录", aliases={"分类语录", "疯四", "疯狂星期四", "彩虹屁", "毒鸡汤"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_context.handle()
+async def handle_context(event: GroupMessageEvent, args: Message = CommandArg()):
+    plain = args.extract_plain_text().strip()
+    raw = event.get_plaintext().strip()
+    name = plain or ("疯狂星期四" if "疯" in raw else "彩虹屁" if "彩虹" in raw else "毒鸡汤" if "毒" in raw else "疯狂星期四")
+    try:
+        data = await api_client.saohua_context(name=name)
+    except JX3APIError as e:
+        await cmd_context.finish(f"❌ 获取失败：{e.msg}")
+
+    await cmd_context.finish(f"📜 [{name}]\n{data.get('text', '暂无内容')}")
 
 
 # ===== 骗子 =====

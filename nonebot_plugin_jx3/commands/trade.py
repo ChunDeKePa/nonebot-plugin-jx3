@@ -126,3 +126,51 @@ async def handle_tieba_price(event: GroupMessageEvent, args: Message = CommandAr
 
     img = await renderer.render("table.html", title=f"📊 贴吧物价 · {name}", data=data)
     await cmd_tieba_price.finish(MessageSegment.image(img))
+
+
+# ===== 成本计算 =====
+cmd_manufacture = on_command("成本计算", aliases={"产物成本", "生活技艺成本"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_manufacture.handle()
+async def handle_manufacture(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    parts = text.split()
+    if not parts:
+        await cmd_manufacture.finish("请输入产物名称，如：成本计算 飞仙玄晶 或 成本计算 梦江南 飞仙玄晶")
+
+    server = await get_server(event, args)
+    if len(parts) >= 2:
+        server, name = parts[0], parts[1]
+    else:
+        name = parts[0]
+
+    if not server:
+        await cmd_manufacture.finish("请先绑定服务器或输入服务器名")
+
+    try:
+        data = await api_client.trade_manufacture(server=server, name=name)
+    except JX3APIError as e:
+        await cmd_manufacture.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🛠️ 产物成本计算 · {name}", data=data)
+    await cmd_manufacture.finish(MessageSegment.image(img))
+
+
+# ===== 万宝楼查号 =====
+cmd_wanbaolou = on_command("万宝楼查号", aliases={"万宝楼编号", "万宝楼"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_wanbaolou.handle()
+async def handle_wanbaolou(event: GroupMessageEvent, args: Message = CommandArg()):
+    wbl_id = args.extract_plain_text().strip()
+    if not wbl_id:
+        await cmd_wanbaolou.finish("请输入万宝楼商品编号，如：万宝楼查号 123456789")
+
+    try:
+        data = await api_client.trade_wanbaolou(id=wbl_id)
+    except JX3APIError as e:
+        await cmd_wanbaolou.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🏪 万宝楼商品详情 · {wbl_id}", data=data)
+    await cmd_wanbaolou.finish(MessageSegment.image(img))

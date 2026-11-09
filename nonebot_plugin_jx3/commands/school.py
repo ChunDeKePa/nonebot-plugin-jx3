@@ -173,3 +173,61 @@ async def handle_seniority(event: GroupMessageEvent, args: Message = CommandArg(
     title = f"📊 资历排行" + (f" · {school}" if school else "")
     img = await renderer.render("table.html", title=title, data=data)
     await cmd_seniority.finish(MessageSegment.image(img))
+
+
+# ===== 急速 =====
+cmd_haste = on_command("急速", aliases={"急速计算", "阈值"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_haste.handle()
+async def handle_haste(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().strip()
+    cd = 1.5
+    if text:
+        try:
+            cd = float(text)
+        except ValueError:
+            pass
+
+    try:
+        data = await api_client.skill_calculate(cooldown=cd)
+    except JX3APIError as e:
+        await cmd_haste.finish(f"❌ 计算失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"⚡ 急速阈值计算 (CD: {cd}s)", data=data)
+    await cmd_haste.finish(MessageSegment.image(img))
+
+
+# ===== 配装 =====
+cmd_school_search = on_command("配装", aliases={"配装推荐"}, rule=group_filter(), priority=5, block=True)
+
+
+@cmd_school_search.handle()
+async def handle_school_search(event: GroupMessageEvent, args: Message = CommandArg()):
+    name = args.extract_plain_text().strip()
+    if not name:
+        await cmd_school_search.finish("请输入心法名称，如：配装 花间游")
+
+    try:
+        data = await api_client.school_search(name=name)
+    except JX3APIError as e:
+        await cmd_school_search.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"🥋 配装推荐 · {name}", data=data)
+    await cmd_school_search.finish(MessageSegment.image(img))
+
+
+# ===== 小药清单 =====
+cmd_food_list = on_command("小药清单", rule=group_filter(), priority=5, block=True)
+
+
+@cmd_food_list.handle()
+async def handle_food_list(event: GroupMessageEvent, args: Message = CommandArg()):
+    name = args.extract_plain_text().strip()
+    try:
+        data = await api_client.food_list(name=name)
+    except JX3APIError as e:
+        await cmd_food_list.finish(f"❌ 查询失败：{e.msg}")
+
+    img = await renderer.render("table.html", title=f"💊 小药清单" + (f" · {name}" if name else ""), data=data)
+    await cmd_food_list.finish(MessageSegment.image(img))
