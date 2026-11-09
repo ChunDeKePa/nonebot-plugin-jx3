@@ -4,7 +4,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter
+from ..utils import group_filter, vip_filter
 from ..api_client import api_client, JX3APIError
 
 
@@ -37,7 +37,7 @@ async def handle_tiangou(event: GroupMessageEvent, args: Message = CommandArg())
 
 
 # ===== 八卦 =====
-cmd_bagua = on_command("八卦", rule=group_filter(), priority=5, block=True)
+cmd_bagua = on_command("八卦", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_bagua.handle()
@@ -128,7 +128,7 @@ async def handle_zhanan():
 
 
 # ===== 分类语录 =====
-cmd_context = on_command("语录", aliases={"分类语录", "疯四", "疯狂星期四", "彩虹屁", "毒鸡汤"}, rule=group_filter(), priority=5, block=True)
+cmd_context = on_command("语录", aliases={"分类语录", "疯四", "疯狂星期四", "彩虹屁", "毒鸡汤"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_context.handle()
@@ -145,7 +145,7 @@ async def handle_context(event: GroupMessageEvent, args: Message = CommandArg())
 
 
 # ===== 骗子 =====
-cmd_fraud = on_command("骗子", rule=group_filter(), priority=5, block=True)
+cmd_fraud = on_command("骗子", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_fraud.handle()

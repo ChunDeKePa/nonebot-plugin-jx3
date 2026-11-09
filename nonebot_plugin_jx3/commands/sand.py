@@ -4,13 +4,13 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
 
 # ===== 沙盘 =====
-cmd_sand = on_command("沙盘", rule=group_filter(), priority=5, block=True)
+cmd_sand = on_command("沙盘", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_sand.handle()
@@ -29,7 +29,7 @@ async def handle_sand(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 阵营事件 =====
-cmd_fenxian = on_command("阵营事件", rule=group_filter(), priority=5, block=True)
+cmd_fenxian = on_command("阵营事件", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_fenxian.handle()
@@ -60,7 +60,7 @@ async def handle_fenxian(event: GroupMessageEvent, args: Message = CommandArg())
 
 
 # ===== 诛恶 =====
-cmd_smite = on_command("诛恶", rule=group_filter(), priority=5, block=True)
+cmd_smite = on_command("诛恶", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_smite.handle()
@@ -91,7 +91,7 @@ async def handle_smite(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 诛恶历史 =====
-cmd_wicked = on_command("诛恶历史", aliases={"诛恶记录"}, rule=group_filter(), priority=5, block=True)
+cmd_wicked = on_command("诛恶历史", aliases={"诛恶记录"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_wicked.handle()

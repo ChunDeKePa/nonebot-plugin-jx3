@@ -4,14 +4,14 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 from ..chart import generate_gold_trend_base64
 
 
 # ===== 金价 =====
-cmd_gold = on_command("金价", rule=group_filter(), priority=5, block=True)
+cmd_gold = on_command("金价", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_gold.handle()
@@ -44,7 +44,7 @@ async def handle_gold(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 黑市 =====
-cmd_trade = on_command("黑市", rule=group_filter(), priority=5, block=True)
+cmd_trade = on_command("黑市", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_trade.handle()
@@ -63,7 +63,7 @@ async def handle_trade(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 物价 =====
-cmd_item_price = on_command("物价", rule=group_filter(), priority=5, block=True)
+cmd_item_price = on_command("物价", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_item_price.handle()
@@ -82,7 +82,7 @@ async def handle_item_price(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 搜索物品 =====
-cmd_search_item = on_command("搜索物品", rule=group_filter(), priority=5, block=True)
+cmd_search_item = on_command("搜索物品", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_search_item.handle()
@@ -110,7 +110,7 @@ async def handle_search_item(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 贴吧物价 =====
-cmd_tieba_price = on_command("贴吧物价", rule=group_filter(), priority=5, block=True)
+cmd_tieba_price = on_command("贴吧物价", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_tieba_price.handle()
@@ -129,7 +129,7 @@ async def handle_tieba_price(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 成本计算 =====
-cmd_manufacture = on_command("成本计算", aliases={"产物成本", "生活技艺成本"}, rule=group_filter(), priority=5, block=True)
+cmd_manufacture = on_command("成本计算", aliases={"产物成本", "生活技艺成本"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_manufacture.handle()
@@ -158,7 +158,7 @@ async def handle_manufacture(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 万宝楼查号 =====
-cmd_wanbaolou = on_command("万宝楼查号", aliases={"万宝楼编号", "万宝楼"}, rule=group_filter(), priority=5, block=True)
+cmd_wanbaolou = on_command("万宝楼查号", aliases={"万宝楼编号", "万宝楼"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_wanbaolou.handle()

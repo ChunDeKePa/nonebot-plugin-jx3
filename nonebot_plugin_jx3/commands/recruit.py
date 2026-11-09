@@ -4,13 +4,13 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
 
 # ===== 招募 =====
-cmd_recruit = on_command("招募", rule=group_filter(), priority=5, block=True)
+cmd_recruit = on_command("招募", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_recruit.handle()
@@ -39,7 +39,7 @@ async def handle_recruit(event: GroupMessageEvent, args: Message = CommandArg())
 
 
 # ===== 师徒 =====
-cmd_mentor = on_command("师徒", rule=group_filter(), priority=5, block=True)
+cmd_mentor = on_command("师徒", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_mentor.handle()

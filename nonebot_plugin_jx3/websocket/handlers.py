@@ -83,7 +83,13 @@ async def _send_to_groups(server: str, subscribe: str, message: str, allow_all_s
                 break
 
         if not sent and last_err:
-            logger.error(f"[JX3] 发送事件 [{subscribe}] 到群 {gid} 最终失败: {last_err}")
+            if "1006514" in str(last_err):
+                logger.error(
+                    f"[JX3] 推送 [{subscribe}] 到群 {gid} 失败：NapCat QQNT 处于假在线/断线状态 (1006514)，"
+                    f"请在服务器执行 `docker restart napcat` 或访问 WebUI (端口 6099) 重新扫码登录！"
+                )
+            else:
+                logger.error(f"[JX3] 发送事件 [{subscribe}] 到群 {gid} 最终失败: {last_err}")
 
         # 群发间隔微延时，防止连续快速发送触发 QQ 频率风控
         if len(target) > 1:

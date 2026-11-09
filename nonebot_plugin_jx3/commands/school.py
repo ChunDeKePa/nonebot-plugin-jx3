@@ -4,7 +4,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
@@ -54,7 +54,7 @@ async def handle_rework(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 阵眼 =====
-cmd_matrix = on_command("阵眼", rule=group_filter(), priority=5, block=True)
+cmd_matrix = on_command("阵眼", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_matrix.handle()
@@ -73,7 +73,7 @@ async def handle_matrix(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 奇穴 =====
-cmd_talent = on_command("奇穴", rule=group_filter(), priority=5, block=True)
+cmd_talent = on_command("奇穴", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_talent.handle()
@@ -110,7 +110,7 @@ async def handle_talent(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 技能 =====
-cmd_skills = on_command("技能", rule=group_filter(), priority=5, block=True)
+cmd_skills = on_command("技能", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_skills.handle()
@@ -150,7 +150,7 @@ async def handle_skills(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 资历 =====
-cmd_seniority = on_command("资历", rule=group_filter(), priority=5, block=True)
+cmd_seniority = on_command("资历", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_seniority.handle()
@@ -176,7 +176,7 @@ async def handle_seniority(event: GroupMessageEvent, args: Message = CommandArg(
 
 
 # ===== 急速 =====
-cmd_haste = on_command("急速", aliases={"急速计算", "阈值"}, rule=group_filter(), priority=5, block=True)
+cmd_haste = on_command("急速", aliases={"急速计算", "阈值"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_haste.handle()
@@ -199,7 +199,7 @@ async def handle_haste(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 配装 =====
-cmd_school_search = on_command("配装", aliases={"配装推荐"}, rule=group_filter(), priority=5, block=True)
+cmd_school_search = on_command("配装", aliases={"配装推荐"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_school_search.handle()

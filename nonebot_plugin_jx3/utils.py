@@ -6,6 +6,12 @@ from nonebot.rule import Rule
 from nonebot.adapters import Message
 
 
+def has_token() -> bool:
+    """检查是否配置了 JX3API Token"""
+    from .config import plugin_config
+    return bool(plugin_config.jx3api_token or plugin_config.jx3api_key)
+
+
 def group_filter() -> Rule:
     """群号白名单过滤规则。
     - jx3_enabled_groups 为空 → 所有群可用
@@ -19,6 +25,19 @@ def group_filter() -> Rule:
         if not plugin_config.jx3_enabled_groups:
             return True
         return event.group_id in plugin_config.jx3_enabled_groups
+    return Rule(_check)
+
+
+def vip_filter(level: int = 1) -> Rule:
+    """VIP 权限与白名单组合规则。
+    若未配置 Token，则不匹配该指令，机器人静默忽略，不响应也不报错。
+    """
+    async def _check(event) -> bool:
+        from .config import plugin_config
+        if hasattr(event, "group_id") and plugin_config.jx3_enabled_groups:
+            if event.group_id not in plugin_config.jx3_enabled_groups:
+                return False
+        return has_token()
     return Rule(_check)
 
 

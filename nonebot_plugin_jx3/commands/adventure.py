@@ -4,7 +4,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 from ..database import db
@@ -23,7 +23,7 @@ async def _get_server_for_role(event, args: Message):
 
 
 # ===== 奇遇 =====
-cmd_adventure = on_command("奇遇", rule=group_filter(), priority=5, block=True)
+cmd_adventure = on_command("奇遇", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_adventure.handle()
@@ -46,7 +46,7 @@ async def handle_adventure(event: GroupMessageEvent, args: Message = CommandArg(
 
 
 # ===== 未做奇遇 =====
-cmd_unfinished = on_command("未做奇遇", rule=group_filter(), priority=5, block=True)
+cmd_unfinished = on_command("未做奇遇", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_unfinished.handle()
@@ -69,7 +69,7 @@ async def handle_unfinished(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 近期奇遇 =====
-cmd_recent_adv = on_command("近期奇遇", rule=group_filter(), priority=5, block=True)
+cmd_recent_adv = on_command("近期奇遇", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_recent_adv.handle()
@@ -88,7 +88,7 @@ async def handle_recent_adv(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 奇遇统计 =====
-cmd_adv_stats = on_command("奇遇统计", rule=group_filter(), priority=5, block=True)
+cmd_adv_stats = on_command("奇遇统计", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_adv_stats.handle()
@@ -110,7 +110,7 @@ async def handle_adv_stats(event: GroupMessageEvent, args: Message = CommandArg(
 
 
 # ===== 奇遇汇总 =====
-cmd_adv_collect = on_command("奇遇汇总", rule=group_filter(), priority=5, block=True)
+cmd_adv_collect = on_command("奇遇汇总", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_adv_collect.handle()
@@ -129,7 +129,7 @@ async def handle_adv_collect(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 奇遇攻略 =====
-cmd_strategy = on_command("奇遇攻略", aliases={"奇遇前置", "攻略"}, rule=group_filter(), priority=5, block=True)
+cmd_strategy = on_command("奇遇攻略", aliases={"奇遇前置", "攻略"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_strategy.handle()

@@ -4,14 +4,14 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 from ..database import db
 
 
 # ===== JJC 战绩 =====
-cmd_jjc = on_command("jjc", rule=group_filter(), priority=5, block=True)
+cmd_jjc = on_command("jjc", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_jjc.handle()
@@ -60,7 +60,7 @@ async def handle_jjc(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== JJC 排行 =====
-cmd_jjc_rank = on_command("jjc排行", rule=group_filter(), priority=5, block=True)
+cmd_jjc_rank = on_command("jjc排行", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_jjc_rank.handle()
@@ -83,7 +83,7 @@ async def handle_jjc_rank(event: GroupMessageEvent, args: Message = CommandArg()
 
 
 # ===== JJC 统计 =====
-cmd_jjc_stats = on_command("jjc统计", rule=group_filter(), priority=5, block=True)
+cmd_jjc_stats = on_command("jjc统计", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_jjc_stats.handle()

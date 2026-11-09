@@ -4,13 +4,13 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
 
 # ===== 的卢 =====
-cmd_steed = on_command("的卢", rule=group_filter(), priority=5, block=True)
+cmd_steed = on_command("的卢", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_steed.handle()
@@ -29,7 +29,7 @@ async def handle_steed(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 赤兔 =====
-cmd_chitu = on_command("赤兔", rule=group_filter(), priority=5, block=True)
+cmd_chitu = on_command("赤兔", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_chitu.handle()
@@ -48,7 +48,7 @@ async def handle_chitu(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 赤兔周报 =====
-cmd_chitu_week = on_command("赤兔周报", rule=group_filter(), priority=5, block=True)
+cmd_chitu_week = on_command("赤兔周报", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_chitu_week.handle()
@@ -67,7 +67,7 @@ async def handle_chitu_week(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 马场 =====
-cmd_ranch = on_command("马场", rule=group_filter(), priority=5, block=True)
+cmd_ranch = on_command("马场", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_ranch.handle()
@@ -107,7 +107,7 @@ async def handle_ranch(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 抓马播报 =====
-cmd_ranch_chat = on_command("抓马倒计时", aliases={"抓马播报", "马场通告"}, rule=group_filter(), priority=5, block=True)
+cmd_ranch_chat = on_command("抓马倒计时", aliases={"抓马播报", "马场通告"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_ranch_chat.handle()

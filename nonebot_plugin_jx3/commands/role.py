@@ -4,7 +4,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter
+from ..utils import group_filter, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 from ..database import db
@@ -21,7 +21,7 @@ async def _get_server(event):
 
 
 # ===== 角色 =====
-cmd_role = on_command("角色", rule=group_filter(), priority=5, block=True)
+cmd_role = on_command("角色", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_role.handle()
@@ -44,7 +44,7 @@ async def handle_role(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 名片 =====
-cmd_card = on_command("名片", rule=group_filter(), priority=5, block=True)
+cmd_card = on_command("名片", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_card.handle()
@@ -72,7 +72,7 @@ async def handle_card(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 所有名片 =====
-cmd_cards = on_command("所有名片", rule=group_filter(), priority=5, block=True)
+cmd_cards = on_command("所有名片", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_cards.handle()
@@ -95,7 +95,7 @@ async def handle_cards(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 缓存名片 =====
-cmd_card_cached = on_command("缓存名片", rule=group_filter(), priority=5, block=True)
+cmd_card_cached = on_command("缓存名片", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_card_cached.handle()
@@ -122,7 +122,7 @@ async def handle_card_cached(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 角色百战 =====
-cmd_role_monster = on_command("角色百战", rule=group_filter(), priority=5, block=True)
+cmd_role_monster = on_command("角色百战", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_role_monster.handle()
@@ -157,7 +157,7 @@ async def _parse_server_and_name(event: GroupMessageEvent, args: Message):
 
 
 # ===== 面板 / 装备属性 =====
-cmd_attribute = on_command("面板", aliases={"装备属性", "属性"}, rule=group_filter(), priority=5, block=True)
+cmd_attribute = on_command("面板", aliases={"装备属性", "属性"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_attribute.handle()
@@ -178,7 +178,7 @@ async def handle_attribute(event: GroupMessageEvent, args: Message = CommandArg(
 
 
 # ===== 装备详情 =====
-cmd_calcd_detail = on_command("装备详情", rule=group_filter(), priority=5, block=True)
+cmd_calcd_detail = on_command("装备详情", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_calcd_detail.handle()
@@ -208,7 +208,7 @@ async def handle_calcd_detail(event: GroupMessageEvent, args: Message = CommandA
 
 
 # ===== 装备记录 =====
-cmd_calcd_records = on_command("装备记录", aliases={"历史配装"}, rule=group_filter(), priority=5, block=True)
+cmd_calcd_records = on_command("装备记录", aliases={"历史配装"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_calcd_records.handle()
@@ -229,7 +229,7 @@ async def handle_calcd_records(event: GroupMessageEvent, args: Message = Command
 
 
 # ===== 查成就 =====
-cmd_achievement = on_command("查成就", aliases={"成就"}, rule=group_filter(), priority=5, block=True)
+cmd_achievement = on_command("查成就", aliases={"成就"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_achievement.handle()
@@ -259,7 +259,7 @@ async def handle_achievement(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 资历分布 =====
-cmd_tuilan_achieve = on_command("资历分布", aliases={"成就分布"}, rule=group_filter(), priority=5, block=True)
+cmd_tuilan_achieve = on_command("资历分布", aliases={"成就分布"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_tuilan_achieve.handle()
@@ -280,7 +280,7 @@ async def handle_tuilan_achieve(event: GroupMessageEvent, args: Message = Comman
 
 
 # ===== 随机名片 =====
-cmd_card_random = on_command("随机名片", rule=group_filter(), priority=5, block=True)
+cmd_card_random = on_command("随机名片", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_card_random.handle()
@@ -304,7 +304,7 @@ async def handle_card_random(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 名片预设 =====
-cmd_card_preset = on_command("名片预设", rule=group_filter(), priority=5, block=True)
+cmd_card_preset = on_command("名片预设", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_card_preset.handle()
@@ -329,7 +329,7 @@ async def handle_card_preset(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 查发言 =====
-cmd_chat = on_command("查发言", aliases={"聊天记录", "发言记录"}, rule=group_filter(), priority=5, block=True)
+cmd_chat = on_command("查发言", aliases={"聊天记录", "发言记录"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_chat.handle()
@@ -350,7 +350,7 @@ async def handle_chat(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 副本进度 =====
-cmd_raid = on_command("副本进度", aliases={"团本记录", "秘境记录"}, rule=group_filter(), priority=5, block=True)
+cmd_raid = on_command("副本进度", aliases={"团本记录", "秘境记录"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_raid.handle()

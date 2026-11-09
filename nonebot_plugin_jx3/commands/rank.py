@@ -4,13 +4,13 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
 
 # ===== 榜单 =====
-cmd_rank = on_command("榜单", rule=group_filter(), priority=5, block=True)
+cmd_rank = on_command("榜单", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank.handle()
@@ -33,7 +33,7 @@ async def handle_rank(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 试炼排行 =====
-cmd_trials = on_command("试炼排行", rule=group_filter(), priority=5, block=True)
+cmd_trials = on_command("试炼排行", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_trials.handle()
@@ -67,7 +67,7 @@ async def handle_trials(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 掉落 =====
-cmd_reward = on_command("掉落", rule=group_filter(), priority=5, block=True)
+cmd_reward = on_command("掉落", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_reward.handle()
@@ -90,7 +90,7 @@ async def handle_reward(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 名剑总榜 =====
-cmd_rank_arena = on_command("名剑总榜", aliases={"跨服名剑", "名剑全服榜"}, rule=group_filter(), priority=5, block=True)
+cmd_rank_arena = on_command("名剑总榜", aliases={"跨服名剑", "名剑全服榜"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_arena.handle()
@@ -108,7 +108,7 @@ async def handle_rank_arena(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 争霸榜 =====
-cmd_rank_champ = on_command("争霸榜", aliases={"武林争霸", "争霸赛"}, rule=group_filter(), priority=5, block=True)
+cmd_rank_champ = on_command("争霸榜", aliases={"武林争霸", "争霸赛"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_champ.handle()
@@ -127,7 +127,7 @@ async def handle_rank_champ(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 捕快榜 =====
-cmd_rank_constable = on_command("捕快榜", rule=group_filter(), priority=5, block=True)
+cmd_rank_constable = on_command("捕快榜", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_constable.handle()
@@ -146,7 +146,7 @@ async def handle_rank_constable(event: GroupMessageEvent, args: Message = Comman
 
 
 # ===== 浪客榜 =====
-cmd_rank_outlaw = on_command("浪客榜", rule=group_filter(), priority=5, block=True)
+cmd_rank_outlaw = on_command("浪客榜", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_outlaw.handle()
@@ -165,7 +165,7 @@ async def handle_rank_outlaw(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 决斗榜 =====
-cmd_rank_wanted = on_command("决斗榜", aliases={"赏金榜"}, rule=group_filter(), priority=5, block=True)
+cmd_rank_wanted = on_command("决斗榜", aliases={"赏金榜"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_wanted.handle()
@@ -184,7 +184,7 @@ async def handle_rank_wanted(event: GroupMessageEvent, args: Message = CommandAr
 
 
 # ===== 排行统计 =====
-cmd_rank_stats = on_command("排行统计", rule=group_filter(), priority=5, block=True)
+cmd_rank_stats = on_command("排行统计", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_rank_stats.handle()
@@ -202,7 +202,7 @@ async def handle_rank_stats(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 试炼秒伤 =====
-cmd_trial_boss = on_command("试炼秒伤", rule=group_filter(), priority=5, block=True)
+cmd_trial_boss = on_command("试炼秒伤", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_trial_boss.handle()
@@ -228,7 +228,7 @@ async def handle_trial_boss(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 试炼赛季 =====
-cmd_trial_season = on_command("试炼赛季", rule=group_filter(), priority=5, block=True)
+cmd_trial_season = on_command("试炼赛季", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_trial_season.handle()

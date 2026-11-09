@@ -4,14 +4,14 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 from ..database import db
 
 
 # ===== 烟花 =====
-cmd_firework = on_command("烟花", rule=group_filter(), priority=5, block=True)
+cmd_firework = on_command("烟花", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_firework.handle()
@@ -51,7 +51,7 @@ async def handle_firework(event: GroupMessageEvent, args: Message = CommandArg()
 
 
 # ===== 拍卖 =====
-cmd_auction = on_command("拍卖", rule=group_filter(), priority=5, block=True)
+cmd_auction = on_command("拍卖", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_auction.handle()

@@ -4,7 +4,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from ..utils import group_filter, get_server
+from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
 from ..render import renderer
 
@@ -143,7 +143,7 @@ async def handle_fuyao(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 百战周报 =====
-cmd_monster_weekly = on_command("百战周报", aliases={"本周百战"}, rule=group_filter(), priority=5, block=True)
+cmd_monster_weekly = on_command("百战周报", aliases={"本周百战"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_monster_weekly.handle()
@@ -158,7 +158,7 @@ async def handle_monster_weekly(event: GroupMessageEvent):
 
 
 # ===== 我的百战 =====
-cmd_my_monster = on_command("我的百战", rule=group_filter(), priority=5, block=True)
+cmd_my_monster = on_command("我的百战", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_my_monster.handle()
@@ -194,7 +194,7 @@ async def handle_my_monster(event: GroupMessageEvent, args: Message = CommandArg
 
 
 # ===== 关隘状态 =====
-cmd_castle_status = on_command("关隘状态", aliases={"关隘首领状态", "全服关隘"}, rule=group_filter(), priority=5, block=True)
+cmd_castle_status = on_command("关隘状态", aliases={"关隘首领状态", "全服关隘"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_castle_status.handle()
@@ -209,7 +209,7 @@ async def handle_castle_status(event: GroupMessageEvent):
 
 
 # ===== 秘境方位 =====
-cmd_mech_direction = on_command("秘境方位", aliases={"八卦方位", "秘境解密"}, rule=group_filter(), priority=5, block=True)
+cmd_mech_direction = on_command("秘境方位", aliases={"八卦方位", "秘境解密"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_mech_direction.handle()
