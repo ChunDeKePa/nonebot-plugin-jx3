@@ -4,9 +4,11 @@
 2. 根据 server + 订阅名 查找目标群
 3. 发送消息
 """
+import asyncio
+import re
 from typing import Callable, Dict
 
-from nonebot import get_bot, logger
+from nonebot import logger
 
 from ..database import db
 from ..utils import format_ts
@@ -17,6 +19,7 @@ async def _send_to_groups(server: str, subscribe: str, message: str, allow_all_s
     - allow_all_subscribers=True 或 server 为空时发送给所有订阅群
     - 支持群白名单 (jx3_enabled_groups) 自动过滤
     - 兼容多个已连接 Bot 适配器实例
+    - 支持抖动智能重试、外链风控降级、群发频控防抖
     """
     from nonebot import get_bots
     from ..config import plugin_config
@@ -25,8 +28,6 @@ async def _send_to_groups(server: str, subscribe: str, message: str, allow_all_s
     if not bots:
         logger.warning(f"[JX3] 没有已连接的 Bot 适配器，跳过推送事件 [{subscribe}]")
         return
-
-    bot = list(bots.values())[0]
 
     sub_groups = set(await db.get_groups_by_subscribe(subscribe))
     # 支持 818 与 八卦 别名互通，微博与新闻互通
@@ -51,11 +52,42 @@ async def _send_to_groups(server: str, subscribe: str, message: str, allow_all_s
         return
 
     logger.info(f"[JX3] 推送 [{subscribe}] 事件至 {len(target)} 个群: {target}")
+
+    bot_list = list(bots.values())
+
     for gid in target:
-        try:
-            await bot.send_group_msg(group_id=gid, message=message)
-        except Exception as e:
-            logger.error(f"[JX3] 发送事件 [{subscribe}] 到群 {gid} 失败: {e}")
+        sent = False
+        last_err = None
+
+        # 遍历可用 Bot 并在瞬时异常时支持重试
+        for bot in bot_list:
+            for attempt in range(2):
+                msg_to_send = message
+                # 第二次重试时：如果消息中含有 http 链接，可能是触发了 QQNT 外链风控(1006514)，尝试剥离链接作为兜底
+                if attempt == 1 and re.search(r'https?://', message):
+                    msg_to_send = re.sub(r'🔗\s*https?://\S+', '（链接已被防风控脱敏）', message)
+                    msg_to_send = re.sub(r'https?://\S+', '', msg_to_send)
+
+                try:
+                    await bot.send_group_msg(group_id=gid, message=msg_to_send)
+                    sent = True
+                    break
+                except Exception as e:
+                    last_err = e
+                    if attempt == 0:
+                        # 遭遇 QQNT 瞬时断线(1006514)或网络抖动，稍作等待后重试
+                        logger.warning(f"[JX3] 推送 [{subscribe}] 到群 {gid} 遇到网络或风控波动 ({e})，1.5s 后重试...")
+                        await asyncio.sleep(1.5)
+
+            if sent:
+                break
+
+        if not sent and last_err:
+            logger.error(f"[JX3] 发送事件 [{subscribe}] 到群 {gid} 最终失败: {last_err}")
+
+        # 群发间隔微延时，防止连续快速发送触发 QQ 频率风控
+        if len(target) > 1:
+            await asyncio.sleep(0.3)
 
 
 # ============================================================
