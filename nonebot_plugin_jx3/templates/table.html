@@ -82,11 +82,11 @@
         {% set first = data[0] %}
         {% if first is mapping %}
           {# list of dicts #}
-          {% if headers is defined and columns is defined %}
+          {% if headers is defined and headers %}
             <table>
               <tr>{% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr>
               {% for item in data %}
-              <tr>{% for c in columns %}
+              <tr>{% for c in (columns if (columns is defined and columns) else first.keys() | list) %}
                 {% set val = item.get(c, '') %}
                 {% set class_name = 'camp-hao' if '浩气' in val | string else ('camp-e' if '恶人' in val | string  else '') %}
                 <td class="{{ class_name }}">{{ val }}</td>
@@ -94,12 +94,12 @@
               {% endfor %}
             </table>
           {% else %}
-            {% set keys = first.keys() | list %}
+            {# 未提供明确中文表头时，直接不显示表头标题行 (th)，避免展示原始英文字段名 #}
+            {% set cols = columns if (columns is defined and columns) else first.keys() | list %}
             <table>
-              <tr>{% for k in keys %}<th>{{ k }}</th>{% endfor %}</tr>
               {% for item in data %}
-              <tr>{% for k in keys %}
-                {% set val = item.get(k, '') %}
+              <tr>{% for c in cols %}
+                {% set val = item.get(c, '') %}
                 {% set class_name = 'camp-hao' if '浩气' in val | string else ('camp-e' if '恶人' in val | string else '') %}
                 <td class="{{ class_name }}">{{ val }}</td>
               {% endfor %}</tr>

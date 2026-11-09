@@ -29,7 +29,7 @@ async def handle_battle(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 解密 =====
-cmd_mech = on_command("解密", rule=group_filter(), priority=5, block=True)
+cmd_mech = on_command("解密", aliases={"机关解密"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_mech.handle()
@@ -72,7 +72,7 @@ async def handle_duowan(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 关隘 =====
-cmd_mine = on_command("关隘", rule=group_filter(), priority=5, block=True)
+cmd_mine = on_command("关隘", aliases={"矿车"}, rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_mine.handle()
@@ -113,7 +113,7 @@ async def handle_mine(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 # ===== 百战 =====
-cmd_monster = on_command("百战", rule=group_filter(), priority=5, block=True)
+cmd_monster = on_command("百战", rule=vip_filter(), priority=5, block=True)
 
 
 @cmd_monster.handle()

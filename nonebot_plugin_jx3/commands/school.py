@@ -10,7 +10,7 @@ from ..render import renderer
 
 
 # ===== 小药 =====
-cmd_foods = on_command("小药", rule=group_filter(), priority=5, block=True)
+cmd_foods = on_command("小药", aliases={"小药推荐", "小吃小药", "小药清单"}, rule=group_filter(), priority=5, block=True)
 
 
 @cmd_foods.handle()
@@ -24,12 +24,12 @@ async def handle_foods(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_foods.finish(f"❌ 查询失败：{e.msg}")
 
+    # 小药字段不展示列标题 (headers)，直接呈现内容列表
     img = await renderer.render(
         "table.html", 
         title=f"💊 小药推荐 · {name}", 
         data=data,
-        columns=["class", "name", "boost"],
-        headers=["类型", "物品名称", "增益效果"]
+        columns=["class", "name", "boost"]
     )
     await cmd_foods.finish(MessageSegment.image(img))
 
@@ -41,16 +41,28 @@ cmd_rework = on_command("技改", rule=group_filter(), priority=5, block=True)
 @cmd_rework.handle()
 async def handle_rework(event: GroupMessageEvent, args: Message = CommandArg()):
     name = args.extract_plain_text().strip()
-    if not name:
-        await cmd_rework.finish("请输入心法名称，如：技改 花间游")
-
     try:
         data = await api_client.skill_rework(name=name)
     except JX3APIError as e:
         await cmd_rework.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🔧 技改记录 · {name}", data=data)
-    await cmd_rework.finish(MessageSegment.image(img))
+    if not data:
+        await cmd_rework.finish(f"未找到相关技改记录" + (f"（关键词：{name}）" if name else ""))
+
+    # 包含官方链接，采用文本消息发送以支持在聊天界面直接点击跳转
+    msg_lines = ["🔧 【剑网3 官方武学调整（技改）】"]
+    for idx, item in enumerate(data[:6], 1):
+        title = item.get("title", "")
+        url = item.get("url", "")
+        time_str = item.get("time", "")
+        line = f"{idx}. {title}"
+        if time_str:
+            line += f"\n   📅 时间：{time_str}"
+        if url:
+            line += f"\n   🔗 {url}"
+        msg_lines.append(line)
+
+    await cmd_rework.finish("\n\n".join(msg_lines))
 
 
 # ===== 阵眼 =====
@@ -216,18 +228,3 @@ async def handle_school_search(event: GroupMessageEvent, args: Message = Command
     img = await renderer.render("table.html", title=f"🥋 配装推荐 · {name}", data=data)
     await cmd_school_search.finish(MessageSegment.image(img))
 
-
-# ===== 小药清单 =====
-cmd_food_list = on_command("小药清单", rule=group_filter(), priority=5, block=True)
-
-
-@cmd_food_list.handle()
-async def handle_food_list(event: GroupMessageEvent, args: Message = CommandArg()):
-    name = args.extract_plain_text().strip()
-    try:
-        data = await api_client.food_list(name=name)
-    except JX3APIError as e:
-        await cmd_food_list.finish(f"❌ 查询失败：{e.msg}")
-
-    img = await renderer.render("table.html", title=f"💊 小药清单" + (f" · {name}" if name else ""), data=data)
-    await cmd_food_list.finish(MessageSegment.image(img))

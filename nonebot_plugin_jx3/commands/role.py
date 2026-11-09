@@ -347,24 +347,3 @@ async def handle_chat(event: GroupMessageEvent, args: Message = CommandArg()):
 
     img = await renderer.render("table.html", title=f"💬 聊天记录 · {name}", data=data)
     await cmd_chat.finish(MessageSegment.image(img))
-
-
-# ===== 副本进度 =====
-cmd_raid = on_command("副本进度", aliases={"团本记录", "秘境记录"}, rule=vip_filter(), priority=5, block=True)
-
-
-@cmd_raid.handle()
-async def handle_raid(event: GroupMessageEvent, args: Message = CommandArg()):
-    server, name = await _parse_server_and_name(event, args)
-    if not name:
-        await cmd_raid.finish("请输入角色名，如：副本进度 赤瞳竹")
-    if not server:
-        await cmd_raid.finish("请先绑定服务器或输入服务器名")
-
-    try:
-        data = await api_client.raid_records(server=server, name=name)
-    except JX3APIError as e:
-        await cmd_raid.finish(f"❌ 查询失败：{e.msg}")
-
-    img = await renderer.render("table.html", title=f"🏰 副本进度 · {name}", data=data)
-    await cmd_raid.finish(MessageSegment.image(img))

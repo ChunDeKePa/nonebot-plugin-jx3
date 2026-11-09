@@ -439,12 +439,6 @@ class JX3APIClient:
         """
         return await self._request("/chat/records", server=server, name=name, limit=limit, page=page)
 
-    async def raid_records(self, server: str, name: str) -> list:
-        """团队秘境记录。查询角色秘境副本通关与击杀记录【需 VIP 1 令牌】。
-        endpoint: /raid/records
-        params: server, name
-        """
-        return await self._request("/raid/records", server=server, name=name)
 
     # ============================================================
     # 7. 奇遇相关 (Adventure)
@@ -592,12 +586,6 @@ class JX3APIClient:
         """
         return await self._request("/sand/records", server=server)
 
-    async def fenxian_records(self, server: str = "", limit: int = 100) -> list:
-        """阵营事件。分线阵营事件占领记录。
-        endpoint: /fenxian/records
-        params: name(服务器名称), limit
-        """
-        return await self._request("/fenxian/records", name=server, limit=limit)
 
     async def wicked_records(self, server: str = "", limit: int = 20) -> list:
         """诛恶事件。恶人诛恶刷新记录。

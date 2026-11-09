@@ -28,35 +28,6 @@ async def handle_sand(event: GroupMessageEvent, args: Message = CommandArg()):
     await cmd_sand.finish(MessageSegment.image(img))
 
 
-# ===== 阵营事件 =====
-cmd_fenxian = on_command("阵营事件", rule=vip_filter(), priority=5, block=True)
-
-
-@cmd_fenxian.handle()
-async def handle_fenxian(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = await get_server(event, args)
-    if not server:
-        await cmd_fenxian.finish("请先绑定服务器")
-
-    try:
-        data = await api_client.fenxian_records(server=server)
-    except JX3APIError as e:
-        await cmd_fenxian.finish(f"❌ 查询失败：{e.msg}")
-
-    import datetime
-    for item in data:
-        if "seize_time" in item:
-            ts = item["seize_time"]
-            item["time_str"] = datetime.datetime.fromtimestamp(int(ts)).strftime('%m-%d %H:%M')
-
-    img = await renderer.render(
-        "table.html", 
-        title=f"⚔️ 阵营事件", 
-        data=data,
-        columns=["camp_name", "fenxian_name", "role_name", "time_str"],
-        headers=["阵营", "服务器", "角色名", "占领时间"]
-    )
-    await cmd_fenxian.finish(MessageSegment.image(img))
 
 
 # ===== 诛恶 =====
