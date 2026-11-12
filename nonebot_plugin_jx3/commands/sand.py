@@ -24,7 +24,14 @@ async def handle_sand(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_sand.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("sand.html", title=f"🗺️ 沙盘 · {server}", data=data, server=server)
+    img = await renderer.render(
+        "sand.html",
+        title=f"🗺️ 沙盘 · {server}",
+        data=data,
+        server=server,
+        cache_key=f"sand:{server}",
+        cache_ttl=600,
+    )
     await cmd_sand.finish(MessageSegment.image(img))
 
 
@@ -56,7 +63,9 @@ async def handle_smite(event: GroupMessageEvent, args: Message = CommandArg()):
         title=f"😈 诛恶事件 · {server}", 
         data=data,
         columns=["map_name", "time_str"],
-        headers=["刷新地图", "刷新时间"]
+        headers=["刷新地图", "刷新时间"],
+        cache_key=f"smite:{server}",
+        cache_ttl=300,
     )
     await cmd_smite.finish(MessageSegment.image(img))
 
@@ -76,5 +85,11 @@ async def handle_wicked(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_wicked.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"😈 诛恶历史 · {server}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"😈 诛恶历史 · {server}",
+        data=data,
+        cache_key=f"wicked:{server}",
+        cache_ttl=300,
+    )
     await cmd_wicked.finish(MessageSegment.image(img))

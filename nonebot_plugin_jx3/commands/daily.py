@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter, get_server
 from ..api_client import api_client, JX3APIError
-from ..render import renderer
+from ..render import renderer, get_game_day_str, get_game_day_ttl
 
 
 # ===== 日常 =====
@@ -19,12 +19,20 @@ async def handle_daily(event: GroupMessageEvent, args: Message = CommandArg()):
     if not server:
         await cmd_daily.finish("请先绑定服务器或输入服务器名，如：日常 绝代天骄")
 
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         data = await api_client.active_calendar(server=server, num=0)
     except JX3APIError as e:
         await cmd_daily.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("calendar.html", data=data)
+    img = await renderer.render(
+        "calendar.html", 
+        cache_key=f"daily:{server}:{day_str}",
+        cache_ttl=ttl, # 每天07:00自然刷新
+        data=data
+    )
     await cmd_daily.finish(MessageSegment.image(img))
 
 
@@ -38,12 +46,20 @@ async def handle_predict(event: GroupMessageEvent, args: Message = CommandArg())
     if not server:
         await cmd_predict.finish("请先绑定服务器或输入服务器名")
 
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         data = await api_client.active_calendar(server=server, num=1)
     except JX3APIError as e:
         await cmd_predict.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("calendar.html", data=data)
+    img = await renderer.render(
+        "calendar.html", 
+        cache_key=f"predict:{server}:{day_str}",
+        cache_ttl=ttl,
+        data=data
+    )
     await cmd_predict.finish(MessageSegment.image(img))
 
 
@@ -53,6 +69,9 @@ cmd_monthly = on_command("月历", rule=group_filter(), priority=5, block=True)
 
 @cmd_monthly.handle()
 async def handle_monthly(event: GroupMessageEvent, args: Message = CommandArg()):
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         raw = await api_client.active_list_calendar()
     except JX3APIError as e:
@@ -71,7 +90,11 @@ async def handle_monthly(event: GroupMessageEvent, args: Message = CommandArg())
     ]
 
     img = await renderer.render(
-        "table.html", title="📅 活动月历", data=data,
+        "table.html", 
+        cache_key=f"monthly:{day_str}",
+        cache_ttl=ttl,
+        title="📅 活动月历", 
+        data=data,
         columns=["date", "week", "war", "battle", "orecar"],
         headers=["日期", "星期", "大战", "战场", "矿车"]
     )
@@ -91,5 +114,11 @@ async def handle_celebs(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_celebs.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title="🏃 行侠仗义", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"celebs:{name}",
+        cache_ttl=1800, # 30分钟轮转
+        title="🏃 行侠仗义", 
+        data=data
+    )
     await cmd_celebs.finish(MessageSegment.image(img))

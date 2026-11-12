@@ -145,7 +145,13 @@ async def handle_help(event: GroupMessageEvent):
     is_vip = has_token()
     data = _get_help_data(show_all=False)
     title = "⚔️ 剑网三助手 · 指令帮助" if is_vip else "⚔️ 剑网三助手 · 基础免费版帮助"
-    img = await renderer.render("help.html", data=data, title=title)
+    img = await renderer.render(
+        "help.html", 
+        cache_key=f"help:{is_vip}",
+        cache_ttl=None, # 重启不变
+        data=data, 
+        title=title
+    )
     await cmd_help.finish(MessageSegment.image(img))
 
 
@@ -169,6 +175,8 @@ async def handle_all_help(event: GroupMessageEvent):
 
     img = await renderer.render(
         "help.html", 
+        cache_key="all_help",
+        cache_ttl=None, # 重启不变
         data=ALL_HELP_DATA, 
         title="⚔️ 剑网三助手 · 全量指令与权限清单 (管理员)"
     )

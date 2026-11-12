@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
-from ..render import renderer
+from ..render import renderer, get_game_day_str, get_game_day_ttl, get_weekly_ttl
 
 
 # ===== 的卢 =====
@@ -38,12 +38,21 @@ async def handle_chitu(event: GroupMessageEvent, args: Message = CommandArg()):
     if not server:
         await cmd_chitu.finish("请先绑定服务器")
 
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         data = await api_client.chitu_records(server=server)
     except JX3APIError as e:
         await cmd_chitu.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🐴 赤兔记录 · {server}", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"chitu:{server}:{day_str}",
+        cache_ttl=ttl, # 每天07:00刷新
+        title=f"🐴 赤兔记录 · {server}", 
+        data=data
+    )
     await cmd_chitu.finish(MessageSegment.image(img))
 
 
@@ -57,12 +66,21 @@ async def handle_chitu_week(event: GroupMessageEvent, args: Message = CommandArg
     if not server:
         await cmd_chitu_week.finish("请先绑定服务器")
 
+    day_str = get_game_day_str()
+    ttl = get_weekly_ttl(target_weekday=1) # 每周二07:00刷新
+
     try:
         data = await api_client.chitu_week_records(server=server)
     except JX3APIError as e:
         await cmd_chitu_week.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🐴 赤兔周报 · {server}", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"chitu_week:{server}:{day_str}",
+        cache_ttl=ttl,
+        title=f"🐴 赤兔周报 · {server}", 
+        data=data
+    )
     await cmd_chitu_week.finish(MessageSegment.image(img))
 
 

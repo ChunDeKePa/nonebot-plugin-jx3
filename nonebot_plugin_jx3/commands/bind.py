@@ -8,6 +8,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter
 from ..database import db
+from ..render import renderer
 
 
 # ===== 绑定服务器 =====
@@ -24,4 +25,6 @@ async def handle_bind(event: GroupMessageEvent, args: Message = CommandArg()):
         await cmd_bind.finish("请输入服务器名称，如：绑定 绝代天骄")
 
     await db.set_server(event.group_id, server)
+    # 服务器绑定发生变更，清除本群订阅面板缓存
+    renderer.invalidate(f"subscribe:{event.group_id}")
     await cmd_bind.finish(f"✅ 已将本群绑定至【{server}】服务器")

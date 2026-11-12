@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter, get_server
 from ..api_client import api_client, JX3APIError
-from ..render import renderer
+from ..render import renderer, get_game_day_str, get_game_day_ttl
 
 
 # ===== 鲜花 =====
@@ -19,12 +19,21 @@ async def handle_flower(event: GroupMessageEvent, args: Message = CommandArg()):
     if not server:
         await cmd_flower.finish("请先绑定服务器或输入服务器名，如：鲜花 绝代天骄")
 
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         data = await api_client.home_flower(server=server)
     except JX3APIError as e:
         await cmd_flower.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("flower.html", title=f"🌸 家园鲜花 · {server}", data=data)
+    img = await renderer.render(
+        "flower.html", 
+        cache_key=f"flower:{server}:{day_str}",
+        cache_ttl=ttl, # 每天07:00刷新
+        title=f"🌸 家园鲜花 · {server}", 
+        data=data
+    )
     await cmd_flower.finish(MessageSegment.image(img))
 
 
@@ -43,7 +52,13 @@ async def handle_furniture(event: GroupMessageEvent, args: Message = CommandArg(
     except JX3APIError as e:
         await cmd_furniture.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("card.html", title=f"🏠 装饰 · {name}", data=data)
+    img = await renderer.render(
+        "card.html", 
+        cache_key=f"furniture:{name}",
+        cache_ttl=86400, # 装饰来源24小时缓存
+        title=f"🏠 装饰 · {name}", 
+        data=data
+    )
     await cmd_furniture.finish(MessageSegment.image(img))
 
 
@@ -62,5 +77,11 @@ async def handle_travel(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_travel.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("card.html", title=f"📜 图谱 · {name}", data=data)
+    img = await renderer.render(
+        "card.html", 
+        cache_key=f"travel:{name}",
+        cache_ttl=86400, # 兵甲图谱24小时缓存
+        title=f"📜 器物图谱 · {name}", 
+        data=data
+    )
     await cmd_travel.finish(MessageSegment.image(img))

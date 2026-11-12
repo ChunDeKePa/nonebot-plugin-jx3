@@ -55,7 +55,14 @@ async def handle_jjc(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_jjc.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("arena.html", title=f"⚔️ 名剑战绩 · {name}", data=data, mode=mode)
+    img = await renderer.render(
+        "arena.html",
+        title=f"⚔️ 名剑战绩 · {name}",
+        data=data,
+        mode=mode,
+        cache_key=f"jjc:{server}:{name}:{mode}",
+        cache_ttl=300,
+    )
     await cmd_jjc.finish(MessageSegment.image(img))
 
 
@@ -78,7 +85,13 @@ async def handle_jjc_rank(event: GroupMessageEvent, args: Message = CommandArg()
     except JX3APIError as e:
         await cmd_jjc_rank.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 名剑排行 · {mode}v{mode}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 名剑排行 · {mode}v{mode}",
+        data=data,
+        cache_key=f"jjc_rank:{mode}",
+        cache_ttl=1800,
+    )
     await cmd_jjc_rank.finish(MessageSegment.image(img))
 
 
@@ -101,5 +114,11 @@ async def handle_jjc_stats(event: GroupMessageEvent, args: Message = CommandArg(
     except JX3APIError as e:
         await cmd_jjc_stats.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"📊 名剑统计 · {mode}v{mode}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"📊 名剑统计 · {mode}v{mode}",
+        data=data,
+        cache_key=f"jjc_stats:{mode}",
+        cache_ttl=1800,
+    )
     await cmd_jjc_stats.finish(MessageSegment.image(img))

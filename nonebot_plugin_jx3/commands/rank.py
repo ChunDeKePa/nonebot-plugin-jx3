@@ -28,7 +28,13 @@ async def handle_rank(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_rank.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 {text}榜单", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 {text}榜单",
+        data=data,
+        cache_key=f"rank:{server}:{text}",
+        cache_ttl=1800,
+    )
     await cmd_rank.finish(MessageSegment.image(img))
 
 
@@ -61,7 +67,9 @@ async def handle_trials(event: GroupMessageEvent, args: Message = CommandArg()):
         title=title,
         data=data,
         columns=["role_name", "max_level", "total_score", "equip_score"],
-        headers=["角色名", "最高层数", "试炼分数", "装备分数"]
+        headers=["角色名", "最高层数", "试炼分数", "装备分数"],
+        cache_key=f"trials:{server}:{school}",
+        cache_ttl=1800,
     )
     await cmd_trials.finish(MessageSegment.image(img))
 
@@ -85,7 +93,13 @@ async def handle_reward(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_reward.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🎁 掉落统计 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🎁 掉落统计 · {name}",
+        data=data,
+        cache_key=f"reward:{server}:{name}",
+        cache_ttl=1800,
+    )
     await cmd_reward.finish(MessageSegment.image(img))
 
 
@@ -103,7 +117,13 @@ async def handle_rank_arena(event: GroupMessageEvent, args: Message = CommandArg
     except JX3APIError as e:
         await cmd_rank_arena.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 名剑大会全服总榜 ({mode}v{mode})", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 名剑大会全服总榜 ({mode}v{mode})",
+        data=data,
+        cache_key=f"rank_arena:{mode}",
+        cache_ttl=1800,
+    )
     await cmd_rank_arena.finish(MessageSegment.image(img))
 
 
@@ -122,7 +142,13 @@ async def handle_rank_champ(event: GroupMessageEvent, args: Message = CommandArg
     except JX3APIError as e:
         await cmd_rank_champ.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 帮会武林争霸赛排行 ({camp_str})", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 帮会武林争霸赛排行 ({camp_str})",
+        data=data,
+        cache_key=f"rank_champ:{camp}",
+        cache_ttl=1800,
+    )
     await cmd_rank_champ.finish(MessageSegment.image(img))
 
 
@@ -141,7 +167,13 @@ async def handle_rank_constable(event: GroupMessageEvent, args: Message = Comman
     except JX3APIError as e:
         await cmd_rank_constable.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 捕快榜 · {server}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 捕快榜 · {server}",
+        data=data,
+        cache_key=f"rank_constable:{server}",
+        cache_ttl=1800,
+    )
     await cmd_rank_constable.finish(MessageSegment.image(img))
 
 
@@ -160,7 +192,13 @@ async def handle_rank_outlaw(event: GroupMessageEvent, args: Message = CommandAr
     except JX3APIError as e:
         await cmd_rank_outlaw.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 浪客榜 · {server}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 浪客榜 · {server}",
+        data=data,
+        cache_key=f"rank_outlaw:{server}",
+        cache_ttl=1800,
+    )
     await cmd_rank_outlaw.finish(MessageSegment.image(img))
 
 
@@ -179,7 +217,13 @@ async def handle_rank_wanted(event: GroupMessageEvent, args: Message = CommandAr
     except JX3APIError as e:
         await cmd_rank_wanted.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏆 决斗赏金榜 · {server}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏆 决斗赏金榜 · {server}",
+        data=data,
+        cache_key=f"rank_wanted:{server}",
+        cache_ttl=1800,
+    )
     await cmd_rank_wanted.finish(MessageSegment.image(img))
 
 
@@ -197,7 +241,13 @@ async def handle_rank_stats(event: GroupMessageEvent, args: Message = CommandArg
     except JX3APIError as e:
         await cmd_rank_stats.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"📊 排行统计 · {server}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"📊 排行统计 · {server}",
+        data=data,
+        cache_key=f"rank_stats:{server}:{text}",
+        cache_ttl=1800,
+    )
     await cmd_rank_stats.finish(MessageSegment.image(img))
 
 
@@ -223,7 +273,13 @@ async def handle_trial_boss(event: GroupMessageEvent, args: Message = CommandArg
     except JX3APIError as e:
         await cmd_trial_boss.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🗡️ 试炼秒伤 · {season} 第{floor}层", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🗡️ 试炼秒伤 · {season} 第{floor}层",
+        data=data,
+        cache_key=f"trial_boss:{season}:{floor}",
+        cache_ttl=3600,
+    )
     await cmd_trial_boss.finish(MessageSegment.image(img))
 
 
@@ -238,5 +294,11 @@ async def handle_trial_season(event: GroupMessageEvent):
     except JX3APIError as e:
         await cmd_trial_season.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title="🗡️ 试炼之地历史赛季", data=data)
+    img = await renderer.render(
+        "table.html",
+        title="🗡️ 试炼之地历史赛季",
+        data=data,
+        cache_key="trial_seasons",
+        cache_ttl=86400,
+    )
     await cmd_trial_season.finish(MessageSegment.image(img))

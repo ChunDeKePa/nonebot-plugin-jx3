@@ -24,11 +24,14 @@ async def handle_subscribe(event: GroupMessageEvent, args: Message = CommandArg(
     name = args.extract_plain_text().strip()
 
     if not name:
-        # 无参数：独立绘制订阅与推送管理高清图
+        # 无参数：独立绘制订阅与推送管理高清图（群状态缓存）
         server = await db.get_server(event.group_id)
         current = await db.get_subscribes(event.group_id)
+        sub_tuple = tuple(sorted(current))
         img = await renderer.render(
             "subscribe.html",
+            cache_key=f"subscribe:{event.group_id}:{server}:{sub_tuple}",
+            cache_ttl=86400, # 状态未变更前常驻缓存
             server=server or "未绑定",
             group_id=event.group_id,
             current=current,
@@ -53,6 +56,8 @@ async def handle_subscribe(event: GroupMessageEvent, args: Message = CommandArg(
 
     success = await db.add_subscribe(event.group_id, name)
     if success:
+        # 订阅变更，立即使本群订阅图缓存失效
+        renderer.invalidate(f"subscribe:{event.group_id}")
         await cmd_subscribe.finish(f"✅ 成功开启本群【{name}】事件推送！")
     else:
         await cmd_subscribe.finish(f"⚠️ 本群已订阅【{name}】，无需重复订阅")
@@ -83,6 +88,8 @@ async def handle_unsub(event: GroupMessageEvent, args: Message = CommandArg()):
 
     success = await db.remove_subscribe(event.group_id, name)
     if success:
+        # 订阅变更，立即使本群订阅图缓存失效
+        renderer.invalidate(f"subscribe:{event.group_id}")
         await cmd_unsub.finish(f"✅ 已成功取消本群【{name}】事件推送")
     else:
         await cmd_unsub.finish(f"⚠️ 本群尚未订阅【{name}】")

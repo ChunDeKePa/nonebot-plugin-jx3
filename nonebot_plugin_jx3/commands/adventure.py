@@ -143,5 +143,11 @@ async def handle_strategy(event: GroupMessageEvent, args: Message = CommandArg()
     except JX3APIError as e:
         await cmd_strategy.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🎯 奇遇攻略 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🎯 奇遇攻略 · {name}",
+        data=data,
+        cache_key=f"strategy:{name}",
+        cache_ttl=86400,
+    )
     await cmd_strategy.finish(MessageSegment.image(img))

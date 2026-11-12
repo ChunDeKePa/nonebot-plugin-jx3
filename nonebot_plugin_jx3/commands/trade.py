@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
-from ..render import renderer
+from ..render import renderer, get_game_day_str
 from ..chart import generate_gold_trend_base64
 
 
@@ -38,7 +38,9 @@ async def handle_gold(event: GroupMessageEvent, args: Message = CommandArg()):
         title=f"💰 金价走势(30天) · {server}", 
         chart_b64=chart_b64,
         stats=stats,
-        recent_data=recent_data
+        recent_data=recent_data,
+        cache_key=f"gold:{server}:{get_game_day_str()}",
+        cache_ttl=1800,
     )
     await cmd_gold.finish(MessageSegment.image(img))
 
@@ -58,7 +60,13 @@ async def handle_trade(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_trade.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏪 黑市 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏪 黑市 · {name}",
+        data=data,
+        cache_key=f"trade:{name}",
+        cache_ttl=600,
+    )
     await cmd_trade.finish(MessageSegment.image(img))
 
 
@@ -77,7 +85,13 @@ async def handle_item_price(event: GroupMessageEvent, args: Message = CommandArg
     except JX3APIError as e:
         await cmd_item_price.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"📈 物价 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"📈 物价 · {name}",
+        data=data,
+        cache_key=f"item_price:{name}",
+        cache_ttl=600,
+    )
     await cmd_item_price.finish(MessageSegment.image(img))
 
 
@@ -124,7 +138,13 @@ async def handle_tieba_price(event: GroupMessageEvent, args: Message = CommandAr
     except JX3APIError as e:
         await cmd_tieba_price.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"📊 贴吧物价 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"📊 贴吧物价 · {name}",
+        data=data,
+        cache_key=f"tieba_price:{name}",
+        cache_ttl=600,
+    )
     await cmd_tieba_price.finish(MessageSegment.image(img))
 
 
@@ -153,7 +173,13 @@ async def handle_manufacture(event: GroupMessageEvent, args: Message = CommandAr
     except JX3APIError as e:
         await cmd_manufacture.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🛠️ 产物成本计算 · {name}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🛠️ 产物成本计算 · {name}",
+        data=data,
+        cache_key=f"manufacture:{server}:{name}",
+        cache_ttl=1800,
+    )
     await cmd_manufacture.finish(MessageSegment.image(img))
 
 
@@ -172,5 +198,11 @@ async def handle_wanbaolou(event: GroupMessageEvent, args: Message = CommandArg(
     except JX3APIError as e:
         await cmd_wanbaolou.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🏪 万宝楼商品详情 · {wbl_id}", data=data)
+    img = await renderer.render(
+        "table.html",
+        title=f"🏪 万宝楼商品详情 · {wbl_id}",
+        data=data,
+        cache_key=f"wanbaolou:{wbl_id}",
+        cache_ttl=600,
+    )
     await cmd_wanbaolou.finish(MessageSegment.image(img))

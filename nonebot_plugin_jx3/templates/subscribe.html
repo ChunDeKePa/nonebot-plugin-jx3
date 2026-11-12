@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 760px;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #e0e0e0;
+    padding: 24px;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .main-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #d4af37;
+    text-align: center;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .info-bar {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .info-value {
+    color: #ffd54f;
+    font-weight: bold;
+  }
+  .info-value.unbound {
+    color: #ef5350;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd54f;
+    margin: 16px 0 10px 0;
+    padding-left: 10px;
+    border-left: 3px solid #d4af37;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .current-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+    padding: 14px;
+    min-height: 52px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .sub-tag-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    color: #81c784;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .sub-tag-active::before {
+    content: "●";
+    color: #4caf50;
+    font-size: 11px;
+  }
+  .empty-tip {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+  }
+  .event-category-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #90caf9;
+    margin: 14px 0 6px 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .event-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .event-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .event-name {
+    font-weight: bold;
+    font-size: 13px;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .event-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 8px;
+    flex-grow: 1;
+    text-align: right;
+  }
+  .event-scope {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .scope-server {
+    background: rgba(33, 150, 243, 0.15);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+  }
+  .scope-all {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ffb74d;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+  }
+  .guide-box {
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .guide-title {
+    font-weight: bold;
+    color: #ffd54f;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .cmd-chip {
+    background: rgba(0, 0, 0, 0.4);
+    color: #90caf9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 12px;
+    margin-right: 6px;
+  }
+  .footer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 12px;
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="main-title">🔔 剑网三助手 · 订阅与推送管理</div>
+    
+    <div class="info-bar">
+      <div class="info-item">
+        <span class="info-label">本群绑定服务器：</span>
+        {% if server and server != "未绑定" %}
+          <span class="info-value">【{{ server }}】</span>
+        {% else %}
+          <span class="info-value unbound">未绑定（请发送「绑定 <区服>」）</span>
+        {% endif %}
+      </div>
+      <div class="info-item">
+        <span class="info-label">当前群号：</span>
+        <span class="info-value">{{ group_id }}</span>
+      </div>
+    </div>
+
+    <!-- 已开启的推送 -->
+    <div class="section-title">
+      <span>📋 本群已开启的推送项目</span>
+      <span style="font-size: 12px; color: rgba(255,255,255,0.5);">共 {{ current | length }} 项已生效</span>
+    </div>
+    <div class="current-box">
+      {% if current and current | length > 0 %}
+        {% for sub in current %}
+          <span class="sub-tag-active">{{ sub }}</span>
+        {% endfor %}
+      {% else %}
+        <div class="empty-tip">本群当前尚未开启任何事件推送。发送「订阅 <事件名>」即可开启！</div>
+      {% endif %}
+    </div>
+
+    <!-- 支持的推送事件列表 -->
+    <div class="section-title">📢 支持订阅的全部事件目录</div>
+
+    <div class="event-category-title">🌟 奇遇与奇珍</div>
+    <div class="event-grid">
+      <div class="event-item">
+        <span class="event-name">奇遇</span>
+        <span class="event-desc">单服奇遇触发实时广播</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">绝世奇遇</span>
+        <span class="event-desc">单服绝世奇遇触发特别播报</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">扶摇</span>
+        <span class="event-desc">扶摇九天奇遇开启即时提醒</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+    </div>
+
+    <div class="event-category-title">🐎 马匹与捕获</div>
+    <div class="event-grid">
+      <div class="event-item">
+        <span class="event-name">抓马</span>
+        <span class="event-desc">马场龙子/麟驹/赤兔刷新与捕获</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">的卢</span>
+        <span class="event-desc">单服的卢出世、捕获与拍卖播报</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+    </div>
+
+    <div class="event-category-title">⚔️ 阵营与攻防</div>
+    <div class="event-grid">
+      <div class="event-item">
+        <span class="event-name">关隘</span>
+        <span class="event-desc">烂柯山关隘首领冷却与刷新</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">云丛</span>
+        <span class="event-desc">云丛事件开启倒计时与预告</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">攻防实况</span>
+        <span class="event-desc">大小攻防战况、据点、首领击退</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">阵营活动提醒</span>
+        <span class="event-desc">周二周四阵营活动、粮仓提醒</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">诛恶</span>
+        <span class="event-desc">恶人谷诛恶事件刷新广播</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">阵营拍卖</span>
+        <span class="event-desc">攻防拍卖极品装备通告</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+    </div>
+
+    <div class="event-category-title">📰 官方动态与开服</div>
+    <div class="event-grid">
+      <div class="event-item">
+        <span class="event-name">开服</span>
+        <span class="event-desc">服务器维护完成开服极速通知</span>
+        <span class="event-scope scope-server">单服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">新闻</span>
+        <span class="event-desc">官方最新新闻资讯即时推送</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">更新</span>
+        <span class="event-desc">版本更新与客户端补丁发布通知</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">微博</span>
+        <span class="event-desc">剑网3官方微博最新动态推送</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+    </div>
+
+    <div class="event-category-title">💬 江湖八卦与全服通告</div>
+    <div class="event-grid">
+      <div class="event-item">
+        <span class="event-name">818 / 八卦</span>
+        <span class="event-desc">贴吧最新 818/吐槽/树洞精华速递</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">玄晶</span>
+        <span class="event-desc">全服大铁玄晶掉落全服通告</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">烟花</span>
+        <span class="event-desc">全服绝世烟花通告</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+      <div class="event-item">
+        <span class="event-name">追魂 / 祭天</span>
+        <span class="event-desc">全服追魂帖、祭天城管广播</span>
+        <span class="event-scope scope-all">全服</span>
+      </div>
+    </div>
+
+    <!-- 操作指引 -->
+    <div class="guide-box">
+      <div class="guide-title">💡 快捷操作指南</div>
+      <div><span class="cmd-chip">订阅 <事件名></span>开启指定推送（例：<code>订阅 开服</code>、<code>订阅 奇遇</code>）</div>
+      <div><span class="cmd-chip">取消订阅 <事件名></span>关闭指定推送（例：<code>取消订阅 818</code>）</div>
+      <div style="margin-top: 6px; color: rgba(255,255,255,0.7); font-size: 12px;">
+        📌 说明：标记为 <span class="event-scope scope-server" style="padding:1px 4px;">单服</span> 的事件需先通过 <span class="cmd-chip">绑定 <服务器></span> 绑定本群服务器；仅群主与管理员可修改设置。
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">{{ bot_name }} · JX3API 实时推送服务</div>
+</body>
+</html>

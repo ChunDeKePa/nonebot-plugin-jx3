@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 
 from ..utils import group_filter, get_server, vip_filter
 from ..api_client import api_client, JX3APIError
-from ..render import renderer
+from ..render import renderer, get_game_day_str, get_game_day_ttl, get_weekly_ttl
 
 
 # ===== 帮战 =====
@@ -118,12 +118,21 @@ cmd_monster = on_command("百战", rule=vip_filter(), priority=5, block=True)
 
 @cmd_monster.handle()
 async def handle_monster(event: GroupMessageEvent, args: Message = CommandArg()):
+    day_str = get_game_day_str()
+    ttl = get_game_day_ttl()
+
     try:
         data = await api_client.active_monster()
     except JX3APIError as e:
         await cmd_monster.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("card.html", title="⚔️ 百战首领", data=data)
+    img = await renderer.render(
+        "card.html", 
+        cache_key=f"monster:{day_str}",
+        cache_ttl=ttl,
+        title="⚔️ 百战首领", 
+        data=data
+    )
     await cmd_monster.finish(MessageSegment.image(img))
 
 
@@ -148,12 +157,20 @@ cmd_monster_weekly = on_command("百战周报", aliases={"本周百战"}, rule=v
 
 @cmd_monster_weekly.handle()
 async def handle_monster_weekly(event: GroupMessageEvent):
+    ttl = get_weekly_ttl(target_weekday=0) # 每周一07:00重置
+
     try:
         data = await api_client.monster_weekly()
     except JX3APIError as e:
         await cmd_monster_weekly.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title="⚔️ 百战异闻录 · 周报", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"monster_weekly:{get_game_day_str()}",
+        cache_ttl=ttl,
+        title="⚔️ 百战异闻录 · 周报", 
+        data=data
+    )
     await cmd_monster_weekly.finish(MessageSegment.image(img))
 
 

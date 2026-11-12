@@ -27,6 +27,8 @@ async def handle_foods(event: GroupMessageEvent, args: Message = CommandArg()):
     # 小药字段不展示列标题 (headers)，直接呈现内容列表
     img = await renderer.render(
         "table.html", 
+        cache_key=f"foods:{name}",
+        cache_ttl=86400, # 24小时心法小药缓存
         title=f"💊 小药推荐 · {name}", 
         data=data,
         columns=["class", "name", "boost"]
@@ -80,7 +82,13 @@ async def handle_matrix(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_matrix.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("matrix.html", title=f"👁️ 阵眼 · {name}", data=data)
+    img = await renderer.render(
+        "matrix.html", 
+        cache_key=f"matrix:{name}",
+        cache_ttl=86400, # 24小时心法阵眼缓存
+        title=f"👁️ 阵眼 · {name}", 
+        data=data
+    )
     await cmd_matrix.finish(MessageSegment.image(img))
 
 
@@ -113,6 +121,8 @@ async def handle_talent(event: GroupMessageEvent, args: Message = CommandArg()):
 
     img = await renderer.render(
         "table.html", 
+        cache_key=f"talent:{name}",
+        cache_ttl=86400, # 24小时奇穴缓存
         title=f"⭐ 奇穴 · {name}", 
         data=formatted_list,
         columns=["level", "talents"],
@@ -153,6 +163,8 @@ async def handle_skills(event: GroupMessageEvent, args: Message = CommandArg()):
 
     img = await renderer.render(
         "table.html", 
+        cache_key=f"skills:{name}",
+        cache_ttl=86400, # 24小时心法技能缓存
         title=f"⚡ 技能 · {name}", 
         data=formatted_list,
         columns=["category", "name", "interval", "simpleDesc"],
@@ -206,7 +218,13 @@ async def handle_haste(event: GroupMessageEvent, args: Message = CommandArg()):
     except JX3APIError as e:
         await cmd_haste.finish(f"❌ 计算失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"⚡ 急速阈值计算 (CD: {cd}s)", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"haste:{cd}",
+        cache_ttl=None, # 数学常数，重启不变
+        title=f"⚡ 急速阈值计算 (CD: {cd}s)", 
+        data=data
+    )
     await cmd_haste.finish(MessageSegment.image(img))
 
 
@@ -225,6 +243,12 @@ async def handle_school_search(event: GroupMessageEvent, args: Message = Command
     except JX3APIError as e:
         await cmd_school_search.finish(f"❌ 查询失败：{e.msg}")
 
-    img = await renderer.render("table.html", title=f"🥋 配装推荐 · {name}", data=data)
+    img = await renderer.render(
+        "table.html", 
+        cache_key=f"school_search:{name}",
+        cache_ttl=86400, # 24小时配装方案缓存
+        title=f"🥋 配装推荐 · {name}", 
+        data=data
+    )
     await cmd_school_search.finish(MessageSegment.image(img))
 
