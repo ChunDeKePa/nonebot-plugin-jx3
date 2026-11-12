@@ -144,7 +144,6 @@
       <span class="cmd-level lvl-vip2">VIP 2</span>
       <span class="cmd-level lvl-tuilan">推栏</span>
       <span class="cmd-level lvl-admin">管理</span>
-      <span class="cmd-level lvl-push">推送</span>
     </div>
 
     {% for section, commands in data.items() %}
@@ -159,13 +158,16 @@
       <span class="cmd-name">{{ item[0] }}</span>
       <span class="cmd-desc">{{ item[1] }}</span>
       {% set lvl = item[2] if item|length > 2 else '免费' %}
-      {% set lvl_class = 'lvl-vip2' if 'VIP 2' in lvl else ('lvl-vip1' if 'VIP 1' in lvl else ('lvl-tuilan' if '推栏' in lvl else ('lvl-admin' if '管理' in lvl else ('lvl-push' if '推送' in lvl else 'lvl-free')))) %}
+      {% set lvl_class = 'lvl-vip2' if 'VIP 2' in lvl else ('lvl-vip1' if 'VIP 1' in lvl else ('lvl-tuilan' if '推栏' in lvl else ('lvl-admin' if '管理' in lvl else 'lvl-free'))) %}
       <span class="cmd-level {{ lvl_class }}">{{ lvl }}</span>
     </div>
     {% endfor %}
     {% if not loop.last %}<div class="divider"></div>{% endif %}
     {% endfor %}
   </div>
-  <div class="footer">{{ bot_name }} · JX3API · {{ timestamp }}</div>
+  <div class="footer">
+    <div style="margin-bottom: 6px; color: #ffd54f;">🔔 提示：实时推送与事件订阅请发送「订阅」查看专属图文管理面板</div>
+    <div>{{ bot_name }} · JX3API · {{ timestamp }}</div>
+  </div>
 </body>
 </html>
